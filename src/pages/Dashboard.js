@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { assets } from "../constant/assets";
 import damboBadge from "../assets/dambo-membership.svg";
-import styles from "./dashboard.module.css";
+// import styles from "./dashboard.module.css";
 import { supabase } from "../utils/twitterOauth";
 import Leaderboard from "../components/Leaderboard";
+import "./style.scss";
 
 const DashboardScreen = () => {
   const [route, setRoute] = useState("home");
@@ -189,16 +190,12 @@ const DashboardScreen = () => {
         display: "flex",
         flexDirection: "column",
       }}
+      className="dashboard-container"
     >
-      <div
-        style={{
-          width: "70%",
-          alignSelf: "center",
-        }}
-      >
+      <div className="dashboard-main">
         {renderHeader()}
         {renderSnackBar()}
-        <div className={styles.scrollDiv}>
+        <div className="scrollDiv">
           {route === "leaderboard" ? <Leaderboard /> : mintMembershipBadge()}
           {/* <div
                         style={{
