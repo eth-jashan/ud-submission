@@ -1,0 +1,53 @@
+.dashboard-header-container {
+  .notifications-wrapper {
+    position: relative;
+    margin-right: 1rem;
+    color: #000;
+    display: flex;
+    align-items: center;
+    .notifications-popup-backdrop {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      top: 0;
+      left: 0;
+    }
+    .notifications-popup {
+      position: absolute;
+      top: 1rem;
+      width: 20rem;
+      min-height: 5rem;
+      max-height: 28rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background-color: #fff;
+      z-index: 2;
+      // box-shadow: 1px 1px 1px #000, -1px -1px 1px #000;
+      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+      overflow-y: auto;
+      border-radius: 12px;
+      .notif-text {
+        padding: 0.5rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+        &:hover {
+          background-color: #f0f0f0;
+        }
+      }
+      .notifications-text1 {
+        padding: 1rem;
+        font-weight: 500;
+        button {
+          margin-top: 0.5rem;
+          background-color: rgb(115, 75, 255);
+          color: #fff;
+          padding: 0.5rem 1rem;
+          border-radius: 16px;
+          border: 0;
+          cursor: pointer;
+          font-weight: 700;
+        }
+      }
+    }
+  }
+}
