@@ -9,9 +9,13 @@ import Governance from "../components/Governance";
 import { getIssuesForRepo } from "../utils/githiubChecks";
 import TaskCard from "../components/TaskCard";
 import DashboardHeader from "../components/DashboardHeader";
+import { IoClose } from "react-icons/io5";
+import { IoMdCheckmark } from "react-icons/io";
 
 const DashboardScreen = () => {
   const [route, setRoute] = useState("home");
+  const [showInput, setShowInput] = useState(false);
+  const [inputText, setInputText] = useState("");
   async function signInWithGithub() {
     await supabase.auth.signIn(
       {
@@ -119,35 +123,50 @@ const DashboardScreen = () => {
           dambo to claim membership
           <br /> badge
         </div>
-
-        <div
-          style={{
-            width: "30%",
-            padding: "12px 16px",
-            background: "white",
-            marginTop: 32,
-            borderRadius: "24px",
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
+        {showInput ? (
+          <div className="twitter-claim-input-row">
+            <input
+              type="text"
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+            />
+            <button>
+              <IoMdCheckmark />
+            </button>
+            <button onClick={() => setShowInput(false)}>
+              <IoClose />
+            </button>
+          </div>
+        ) : (
           <div
-            onClick={() => signInWithGithub()}
             style={{
-              color: "#734BFF",
-              fontFamily: "bold",
-              fontSize: "16px",
+              width: "30%",
+              padding: "12px 16px",
+              background: "white",
+              marginTop: 32,
+              borderRadius: "24px",
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
             }}
           >
-            Share Dambo on Tweeter
+            <div
+              onClick={() => setShowInput(true)}
+              style={{
+                color: "#734BFF",
+                fontFamily: "bold",
+                fontSize: "16px",
+              }}
+            >
+              Share Dambo on Tweeter
+            </div>
+            <img
+              alt=""
+              style={{ height: 24, width: 24 }}
+              src={assets.icons.chevronRightPurple}
+            />
           </div>
-          <img
-            alt=""
-            style={{ height: 24, width: 24 }}
-            src={assets.icons.chevronRightPurple}
-          />
-        </div>
+        )}
       </div>
       <img
         alt=""
