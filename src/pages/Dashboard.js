@@ -12,6 +12,11 @@ import DashboardHeader from "../components/DashboardHeader";
 
 const DashboardScreen = () => {
   const [route, setRoute] = useState("home");
+  const [showNotifs, setShowNotifs] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [fetchingNotifications, setFetchingNotifications] = useState(false);
+  const [hasOptedForNotifications, setHasOptedForNotifications] =
+    useState(true);
   async function signInWithGithub() {
     await supabase.auth.signIn(
       {
@@ -30,8 +35,8 @@ const DashboardScreen = () => {
     const issues = await getIssuesForRepo("eth-jashan", "socio-app-frontend");
     console.log(issues);
     setDevTask(issues.data);
+    fetchNotifications();
   }, []);
-
   const renderSnackBar = () => (
     <div
       style={{
