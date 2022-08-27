@@ -19,6 +19,7 @@ const authSlice = createSlice({
     discordCode: null,
     accountAddress: null,
     authorization: null,
+    github: null,
   },
   reducers: {
     set_web3(state, action) {
@@ -97,6 +98,9 @@ const authSlice = createSlice({
     },
     set_discord_code(state, action) {
       state.discordCode = action.payload.discordCode;
+    },
+    set_github_code(state, action) {
+      state.github = action.payload.github;
     },
     set_unstoppable_auth(state, action) {
       state.accountAddress = action.payload.accountAddress;

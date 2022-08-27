@@ -211,6 +211,16 @@ export const setDiscordCode = (code) => {
   };
 };
 
+export const setGithub = (code) => {
+  return async (dispatch, getState) => {
+    dispatch(
+      authActions.set_github_code({
+        github: code,
+      })
+    );
+  };
+};
+
 export const setUnstoppableAuth = (address, authorization) => {
   return async (dispatch, getState) => {
     dispatch(

@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { assets } from "../constant/assets";
 import damboBadge from "../assets/dambo-membership.svg";
-// import styles from "./dashboard.module.css";
 import { supabase } from "../utils/supabase";
 import Leaderboard from "../components/Leaderboard";
 import "./style.scss";
 import Governance from "../components/Governance";
 import { getIssuesForRepo } from "../utils/githiubChecks";
 import TaskCard from "../components/TaskCard";
+import { Modal } from "antd";
+import ProfileScreen from "./ProfileScreen";
+import { useSelector } from "react-redux";
 
 const DashboardScreen = () => {
-  const [route, setRoute] = useState("home");
+  const [route, setRoute] = useState("profile");
+
   async function signInWithGithub() {
     await supabase.auth.signIn(
       {
@@ -24,6 +27,7 @@ const DashboardScreen = () => {
 
   const [devTask, setDevTask] = useState([]);
   const [marketingTask, setMarketingTask] = useState(["1", "2", "3", "4"]);
+  const address = useSelector((x) => x.auth.accountAddress);
 
   useEffect(async () => {
     const issues = await getIssuesForRepo("eth-jashan", "socio-app-frontend");
@@ -50,7 +54,7 @@ const DashboardScreen = () => {
           color: "#734BFF",
         }}
       >
-        0x3837...3948
+        {`${address?.slice(0, 4)}...${address?.slice(-4)}`}
       </div>
     </div>
   );
@@ -65,17 +69,31 @@ const DashboardScreen = () => {
       }}
     >
       <div
-        onClick={() => setRoute("home")}
+        onClick={() => setRoute("profile")}
         style={{
           display: "flex",
           flexDirection: "row",
           justifyContent: "space-between",
           alignItems: "center",
-          fontFamily: route === "home" ? "bolder" : "books",
+          fontFamily: route === "profile" ? "bolder" : "books",
           fontSize: "1rem",
         }}
       >
-        home
+        profile
+      </div>
+      <div
+        onClick={() => setRoute("task")}
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          fontFamily: route === "task" ? "bolder" : "books",
+          fontSize: "1rem",
+          marginLeft: "2rem",
+        }}
+      >
+        task
       </div>
       <div
         onClick={() => setRoute("leaderboard")}
@@ -143,34 +161,79 @@ const DashboardScreen = () => {
           dambo to claim membership
           <br /> badge
         </div>
-
         <div
           style={{
-            width: "30%",
-            padding: "12px 16px",
-            background: "white",
-            marginTop: 32,
-            borderRadius: "24px",
             display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            // background: "red",
           }}
         >
           <div
-            onClick={() => signInWithGithub()}
             style={{
-              color: "#734BFF",
-              fontFamily: "bold",
-              fontSize: "16px",
+              width: "30%",
+              padding: "12px 16px",
+              background: "white",
+              marginTop: 32,
+              borderRadius: "24px",
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
             }}
           >
-            Share Dambo on Tweeter
+            <div
+              onClick={() => signInWithGithub()}
+              style={{
+                color: "#734BFF",
+                fontFamily: "bold",
+                fontSize: "16px",
+              }}
+            >
+              Share Dambo on Tweeter
+            </div>
+            <img
+              alt=""
+              style={{ height: 24, width: 24 }}
+              src={assets.icons.chevronRightPurple}
+            />
           </div>
-          <img
-            alt=""
-            style={{ height: 24, width: 24 }}
-            src={assets.icons.chevronRightPurple}
-          />
+          <div
+            style={{
+              display: "flex",
+              width: "80%",
+              alignItems: "center",
+              // background: "red",
+            }}
+          >
+            {/* <div
+              style={{
+                // width: "30%",
+                padding: "12px 16px",
+                background: "white",
+                marginTop: 32,
+                borderRadius: "24px",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <div
+                onClick={() => signInWithGithub()}
+                style={{
+                  color: "#734BFF",
+                  fontFamily: "bold",
+                  fontSize: "16px",
+                }}
+              >
+                Verify tweet to claim
+              </div>
+              <img
+                alt=""
+                style={{ height: 24, width: 24 }}
+                src={assets.icons.chevronRightPurple}
+              />
+            </div> */}
+          </div>
         </div>
       </div>
       <img
@@ -200,7 +263,7 @@ const DashboardScreen = () => {
             <Leaderboard />
           ) : route === "governance" ? (
             <Governance />
-          ) : (
+          ) : route === "task" ? (
             <>
               {mintMembershipBadge()}
               <div
@@ -242,6 +305,8 @@ const DashboardScreen = () => {
                 </div>
               </div>
             </>
+          ) : (
+            <ProfileScreen />
           )}
         </div>
       </div>

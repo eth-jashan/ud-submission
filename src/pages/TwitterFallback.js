@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
+import { setGithub } from "../store/actions/auth-action";
 import { supabase } from "../utils/supabase";
 
 const TwitterFallback = () => {
@@ -21,7 +22,8 @@ const TwitterFallback = () => {
     const user = supabase.auth.user();
     console.log("userr..", user);
     if (user) {
-      navigate("/dashboard");
+      dispatch(setGithub(user));
+      navigate("/");
     }
   }
 

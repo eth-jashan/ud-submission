@@ -1,4 +1,4 @@
-import { Row, Col, Typography } from "antd";
+import { Row, Col, Typography, message } from "antd";
 import React, { useEffect } from "react";
 import { useWeb3React } from "@web3-react/core";
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
@@ -8,10 +8,14 @@ import { assets } from "../constant/assets";
 import { useSelector, useDispatch } from "react-redux";
 import { setUnstoppableAuth } from "../store/actions/auth-action";
 import { useNavigate } from "react-router";
+import { supabase } from "../utils/supabase";
+import axios from "axios";
 
 const ConnectScreen = () => {
   const discordCode = useSelector((x) => x.auth.discordCode);
   const accountAddress = useSelector((x) => x.auth.accountAddress);
+  const github = useSelector((x) => x.auth.github);
+  const authorization = useSelector((x) => x.auth.authorization);
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
@@ -45,13 +49,15 @@ const ConnectScreen = () => {
       };
     }
   };
-  if (active) {
+  if (active && !authorization) {
     const username = JSON.parse(localStorage.getItem("username"));
-    const authorization = localStorage.getItem(
-      `authorization?clientID=316afdd4-8b6f-4e6c-8891-c1d22ce96112&scope=openid+wallet&username=${username.value}`
+    const authorization = JSON.parse(
+      localStorage.getItem(
+        `authorization?clientID=316afdd4-8b6f-4e6c-8891-c1d22ce96112&scope=openid+wallet&username=${username.value}`
+      )
     );
     dispatch(setUnstoppableAuth(account, authorization));
-    console.log(active, account, username, authorization);
+    console.log(authorization);
   }
   async function handleDisconnect() {
     try {
@@ -61,9 +67,46 @@ const ConnectScreen = () => {
     }
   }
 
-  useEffect(() => {
-    if (discordCode && accountAddress) {
-      navigate("/dashboard");
+  async function signInWithGithub() {
+    await supabase.auth.signIn(
+      {
+        provider: "github",
+      },
+      {
+        redirectTo: "http://localhost:3000/twitter/fallback?",
+      }
+    );
+  }
+
+  const createUser = async () => {
+    // try {
+    //   const res = await axios.post('http://localhost:3000/createUser',{
+    //     name: "sr1",
+    //     addr: "0x81c9039F206B690918fCd5dDAd41e4D1039DD535",
+    //     discordId: "sr1#9687",
+    //     twitterId: "sr1jann"
+    //   },{
+    //     headers:{
+    //       Authorization: `${jwt}`,
+    //     }
+    //   })
+    //   console.log('ress')
+    //   return true
+    // } catch (error) {
+    //   console.log('error', error.toString())
+    // }
+    return true;
+    console.log("user", authorization.value.idToken.__raw);
+  };
+
+  useEffect(async () => {
+    if (discordCode && authorization && github) {
+      const res = await createUser();
+      if (res) {
+        navigate("/dashboard");
+      } else {
+        message.error("error on authenticate");
+      }
     }
   });
 
@@ -150,6 +193,37 @@ const ConnectScreen = () => {
               {discordCode ? "Connected" : "Connect Discord"}
             </div>
             {!discordCode && (
+              <img
+                alt=""
+                style={{ height: 24, width: 24 }}
+                src={assets.icons.chevronRightWhite}
+              />
+            )}
+          </div>
+
+          <div
+            style={{
+              width: "100%",
+              marginTop: 20,
+              padding: "1rem 1.5rem",
+              background: "black",
+              display: "flex",
+              justifyContent: "space-between",
+              borderRadius: 32,
+              fontSize: 16,
+              alignItems: "center",
+            }}
+            onClick={() => signInWithGithub()}
+          >
+            <div
+              style={{
+                fontFamily: "books",
+                color: "white",
+              }}
+            >
+              {github ? "Connected" : "Connect Github"}
+            </div>
+            {!github && (
               <img
                 alt=""
                 style={{ height: 24, width: 24 }}
