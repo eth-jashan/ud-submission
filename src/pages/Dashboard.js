@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { assets } from "../constant/assets";
 import damboBadge from "../assets/dambo-membership.svg";
 // import styles from "./dashboard.module.css";
-import { supabase } from "../utils/twitterOauth";
+import { supabase } from "../utils/supabase";
 import Leaderboard from "../components/Leaderboard";
 import "./style.scss";
 import Governance from "../components/Governance";
+import { getIssuesForRepo } from "../utils/githiubChecks";
+import TaskCard from "../components/TaskCard";
 
 const DashboardScreen = () => {
   const [route, setRoute] = useState("home");
@@ -19,20 +21,15 @@ const DashboardScreen = () => {
       }
     );
   }
-  const [user, setUser] = useState(null);
-  // useEffect(() => {
-  //     checkUser()
-  //     window.addEventListener("hashchange", function () {
-  //         checkUser()
-  //     })
-  // }, [])
-  // async function checkUser() {
-  //     const user = supabase.auth.user()
-  //     setUser(user)
-  // }
-  // if (user) {
-  //     console.log(user)
-  // }
+
+  const [devTask, setDevTask] = useState([]);
+  const [marketingTask, setMarketingTask] = useState(["1", "2", "3", "4"]);
+
+  useEffect(async () => {
+    const issues = await getIssuesForRepo("eth-jashan", "socio-app-frontend");
+    console.log(issues);
+    setDevTask(issues.data);
+  }, []);
 
   const renderHeader = () => (
     <div
@@ -170,12 +167,14 @@ const DashboardScreen = () => {
             Share Dambo on Tweeter
           </div>
           <img
+            alt=""
             style={{ height: 24, width: 24 }}
             src={assets.icons.chevronRightPurple}
           />
         </div>
       </div>
       <img
+        alt=""
         style={{ position: "absolute", bottom: 0, right: 20 }}
         src={damboBadge}
       />
@@ -202,15 +201,48 @@ const DashboardScreen = () => {
           ) : route === "governance" ? (
             <Governance />
           ) : (
-            mintMembershipBadge()
+            <>
+              {mintMembershipBadge()}
+              <div
+                style={{
+                  width: "100%",
+                  border: "1px solid #E1E1E0",
+                  margin: "12px 0px",
+                }}
+              />
+              <div
+                style={{
+                  flexDirection: "row",
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div
+                  style={{
+                    flexDirection: "column",
+                    display: "flex",
+                    width: "48%",
+                  }}
+                >
+                  {marketingTask.map((x, i) => (
+                    <TaskCard guildName={"marketing guild"} />
+                  ))}
+                </div>
+                <div
+                  style={{
+                    flexDirection: "column",
+                    display: "flex",
+                    width: "48%",
+                  }}
+                >
+                  {devTask.map((x, i) => (
+                    <TaskCard guildName={"developer guild"} item={x} />
+                  ))}
+                </div>
+              </div>
+            </>
           )}
-          {/* <div
-                        style={{
-                            width: "100%",
-                            border: "1px solid #E1E1E0",
-                            margin: "24px 0px",
-                        }}
-                    /> */}
         </div>
       </div>
     </div>
