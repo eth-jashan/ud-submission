@@ -8,6 +8,7 @@ import "./style.scss";
 import Governance from "../components/Governance";
 import { getIssuesForRepo } from "../utils/githiubChecks";
 import TaskCard from "../components/TaskCard";
+import DashboardHeader from "../components/DashboardHeader";
 
 const DashboardScreen = () => {
   const [route, setRoute] = useState("home");
@@ -30,30 +31,6 @@ const DashboardScreen = () => {
     console.log(issues);
     setDevTask(issues.data);
   }, []);
-
-  const renderHeader = () => (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        padding: "1rem 0rem",
-        alignItems: "center",
-        borderBottom: "1px solid #E1E1E0",
-      }}
-    >
-      <div style={{ fontFamily: "bold", fontSize: "1rem" }}>dambo</div>
-      <div
-        style={{
-          fontFamily: "bold",
-          fontSize: "1rem",
-          color: "#734BFF",
-        }}
-      >
-        0x3837...3948
-      </div>
-    </div>
-  );
 
   const renderSnackBar = () => (
     <div
@@ -193,7 +170,7 @@ const DashboardScreen = () => {
       className="dashboard-container"
     >
       <div className="dashboard-main">
-        {renderHeader()}
+        <DashboardHeader />
         {renderSnackBar()}
         <div className="scrollDiv">
           {route === "leaderboard" ? (
