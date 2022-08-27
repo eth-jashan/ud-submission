@@ -1,0 +1,73 @@
+.governance-container {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  /* identical to box height, or 150% */
+
+  color: #000000;
+  width: 100%;
+  .governance-header {
+    padding: 1rem 0;
+  }
+  .governance-cards-container {
+    .governance-card {
+      width: 100%;
+      //   height: 10rem;
+      background: #f0f0f0;
+      border-radius: 12px;
+      margin-bottom: 0.675rem;
+      padding: 1.5rem;
+      .governance-status {
+        font-weight: 700;
+        font-size: 20px;
+        line-height: 28px;
+        &.Passed {
+          color: #1ba672;
+        }
+        &.Fail {
+          color: #ff7979;
+        }
+      }
+      .governance-title {
+        font-weight: 700;
+        font-size: 20px;
+        line-height: 28px;
+        width: 70%;
+      }
+      .governance-info {
+        display: flex;
+        margin-top: 1.5rem;
+        .governance-info-left {
+          width: 20%;
+          color: rgba(0, 0, 0, 0.5);
+        }
+        .governance-info-right {
+          width: 80%;
+          .voting-row {
+            display: flex;
+            .voting-row-left {
+              span {
+                color: rgba(0, 0, 0, 0.5);
+              }
+            }
+            .voting-row-right {
+              display: flex;
+              flex: 1;
+              align-items: center;
+              .voting-bar-wrapper {
+                width: 100%;
+                margin-left: 1rem;
+                .voting-bar {
+                  height: 0.75rem;
+                  border-radius: 12px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

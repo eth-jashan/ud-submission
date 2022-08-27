@@ -5,6 +5,7 @@ import damboBadge from "../assets/dambo-membership.svg";
 import { supabase } from "../utils/twitterOauth";
 import Leaderboard from "../components/Leaderboard";
 import "./style.scss";
+import Governance from "../components/Governance";
 
 const DashboardScreen = () => {
   const [route, setRoute] = useState("home");
@@ -196,7 +197,13 @@ const DashboardScreen = () => {
         {renderHeader()}
         {renderSnackBar()}
         <div className="scrollDiv">
-          {route === "leaderboard" ? <Leaderboard /> : mintMembershipBadge()}
+          {route === "leaderboard" ? (
+            <Leaderboard />
+          ) : route === "governance" ? (
+            <Governance />
+          ) : (
+            mintMembershipBadge()
+          )}
           {/* <div
                         style={{
                             width: "100%",
