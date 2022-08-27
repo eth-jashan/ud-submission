@@ -1,0 +1,51 @@
+.connect-socials-screen-container {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  background: #e1e1e1;
+
+  /* identical to box height, or 150% */
+
+  color: #000000;
+  .socials-screen-left {
+    width: 70%;
+    padding: 0 5%;
+    .socials-left-header {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+      padding: 1rem 0;
+      .twitter-link {
+        font-weight: 500;
+        text-decoration: underline;
+      }
+    }
+    .socials-gm {
+      font-size: 64px;
+      line-height: 72px;
+      margin: 3rem 0 2.5rem;
+    }
+    .socials-dao-info {
+      font-size: 64px;
+      line-height: 72px;
+      color: rgba(0, 0, 0, 0.4);
+      letter-spacing: -0.04em;
+    }
+  }
+  .socials-screen-right {
+    background-color: #fff;
+    width: 30%;
+    padding: 0 4%;
+    .socials-right-heading {
+      font-size: 64px;
+      line-height: 72px;
+      margin-top: 7rem;
+      letter-spacing: -0.04em;
+    }
+  }
+}
