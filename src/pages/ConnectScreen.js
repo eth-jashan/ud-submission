@@ -1,42 +1,56 @@
 import { Row, Col, Typography } from "antd";
-import React from "react";
+import React, { useEffect } from "react";
 import { useWeb3React } from "@web3-react/core";
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 import connectors from "../utils/connector";
+import "./connectScreen.scss";
 import { assets } from "../constant/assets";
+import { useSelector, useDispatch } from "react-redux";
+import { setUnstoppableAuth } from "../store/actions/auth-action";
+import { useNavigate } from "react-router";
 
 const ConnectScreen = () => {
+  const discordCode = useSelector((x) => x.auth.discordCode);
+  const accountAddress = useSelector((x) => x.auth.accountAddress);
+  const navigate = useNavigate();
+
+  const dispatch = useDispatch();
   const onDiscordAuth = () => {
-    window.location.replace(
-      `https://discord.com/api/oauth2/authorize?client_id=950635095465795615&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fdiscord%2Ffallback&response_type=code&scope=identify%20guilds%20guilds.members.read`
-    );
+    if (!discordCode) {
+      window.location.replace(
+        `https://discord.com/api/oauth2/authorize?client_id=950635095465795615&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fdiscord%2Ffallback&response_type=code&scope=identify%20guilds%20guilds.members.read`
+      );
+    }
   };
 
   const { active, account, activate, deactivate } = useWeb3React();
 
   const onWalletConnect = (connectorId) => {
-    return async () => {
-      try {
-        const connector = connectors[connectorId];
+    if (!accountAddress) {
+      return async () => {
+        try {
+          const connector = connectors[connectorId];
 
-        // Taken from https://github.com/NoahZinsmeister/web3-react/issues/124#issuecomment-817631654
-        if (
-          connector instanceof WalletConnectConnector &&
-          connector.walletConnectProvider
-        ) {
-          connector.walletConnectProvider = undefined;
+          // Taken from https://github.com/NoahZinsmeister/web3-react/issues/124#issuecomment-817631654
+          if (
+            connector instanceof WalletConnectConnector &&
+            connector.walletConnectProvider
+          ) {
+            connector.walletConnectProvider = undefined;
+          }
+          await activate(connector);
+        } catch (error) {
+          console.error(error);
         }
-        await activate(connector);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+      };
+    }
   };
   if (active) {
     const username = JSON.parse(localStorage.getItem("username"));
     const authorization = localStorage.getItem(
       `authorization?clientID=316afdd4-8b6f-4e6c-8891-c1d22ce96112&scope=openid+wallet&username=${username.value}`
     );
+    dispatch(setUnstoppableAuth(account, authorization));
     console.log(active, account, username, authorization);
   }
   async function handleDisconnect() {
@@ -47,73 +61,85 @@ const ConnectScreen = () => {
     }
   }
 
+  useEffect(() => {
+    if (discordCode && accountAddress) {
+      navigate("/dashboard");
+    }
+  });
+
   return (
-    <div
-      style={{
-        height: "100vh",
-        width: "100vw",
-        background: "white",
-        display: "flex",
-        alignItems: "center",
-        flexDirection: "column",
-        justifyContent: "center",
-      }}
-    >
-      <div>
-        <div
-          style={{
-            fontFamily: "bold",
-            color: "black",
-            fontSize: "80px",
-            textAlign: "center",
-          }}
-        >
-          gm gm welcome to
+    <div className="connect-socials-screen-container">
+      <div className="socials-screen-left">
+        <div className="socials-left-header">
+          <div className="project-name">dambo</div>
+          <div className="twitter-link">twitter</div>
         </div>
-        <div
-          style={{
-            fontFamily: "bold",
-            color: "black",
-            fontSize: "80px",
-            textAlign: "center",
-          }}
-        >
-          our app, we make
-        </div>
-        <div
-          style={{
-            fontFamily: "bold",
-            color: "#734BFF",
-            fontSize: "80px",
-            textAlign: "center",
-          }}
-        >
-          daoing fun
+        <div className="socials-gm">gm gm</div>
+        <div className="socials-dao-info">
+          DamboDAO is first of its kind disposable DAO. 20% of our winnings from
+          the hackathon will go to DAO treasury and all members will vote on how
+          to spend it(Some Drinks maybe!!)
         </div>
       </div>
-      <div
-        style={{
-          alignItems: "center",
-          display: "flex",
-          textAlign: "center",
-          flexDirection: "column",
-        }}
-      >
-        {Object.keys(connectors).map((v, i) => (
+      <div className="socials-screen-right">
+        <div className="socials-right-heading">Get started</div>
+        <div className="social-connect-btns">
+          <div></div>
           <div
-            key={i}
-            onClick={onWalletConnect(v)}
             style={{
-              width: "335px",
-              marginTop: 120,
+              alignItems: "center",
+              display: "flex",
+              textAlign: "center",
+              flexDirection: "column",
+            }}
+          >
+            {Object.keys(connectors).map((v, i) => (
+              <div
+                key={i}
+                style={{
+                  width: "100%",
+                  marginTop: 50,
+                  padding: "1rem 1.5rem",
+                  background: "#734BFF",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  borderRadius: 32,
+                  fontSize: 16,
+                  alignItems: "center",
+                }}
+                onClick={onWalletConnect(v)}
+              >
+                <div
+                  style={{
+                    fontFamily: "books",
+                    color: "white",
+                  }}
+                >
+                  {!accountAddress ? "Connect Wallet" : "Connected"}
+                </div>
+                {!accountAddress && (
+                  <img
+                    alt=""
+                    style={{ height: 24, width: 24 }}
+                    src={assets.icons.chevronRightWhite}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+          <div
+            style={{
+              width: "100%",
+              marginTop: 20,
               padding: "1rem 1.5rem",
-              background: "#734BFF",
+              background: "#5665F3",
               display: "flex",
               justifyContent: "space-between",
               borderRadius: 32,
               fontSize: 16,
               alignItems: "center",
             }}
+            onClick={() => onDiscordAuth()}
           >
             <div
               style={{
@@ -121,69 +147,17 @@ const ConnectScreen = () => {
                 color: "white",
               }}
             >
-              Connect Wallet
+              {discordCode ? "Connected" : "Connect Discord"}
             </div>
-            <img
-              alt=""
-              style={{ height: 24, width: 24 }}
-              src={assets.icons.chevronRightWhite}
-            />
+            {!discordCode && (
+              <img
+                alt=""
+                style={{ height: 24, width: 24 }}
+                src={assets.icons.chevronRightWhite}
+              />
+            )}
           </div>
-        ))}
-        <div
-          style={{
-            width: "335px",
-            marginTop: 20,
-            padding: "1rem 1.5rem",
-            background: "#5665F3",
-            display: "flex",
-            justifyContent: "space-between",
-            borderRadius: 32,
-            fontSize: 16,
-            alignItems: "center",
-          }}
-        >
-          <div
-            onClick={() => onDiscordAuth()}
-            style={{
-              fontFamily: "books",
-              color: "white",
-            }}
-          >
-            Connect Discord
-          </div>
-          <img
-            alt=""
-            style={{ height: 24, width: 24 }}
-            src={assets.icons.chevronRightWhite}
-          />
         </div>
-        {/* <div
-                    style={{
-                        width: "335px",
-                        marginTop: 20,
-                        padding: "1rem 1.5rem",
-                        background: "#1D9AEF",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        borderRadius: 32,
-                        fontSize: 16,
-                        alignItems: "center",
-                    }}
-                >
-                    <div
-                        style={{
-                            fontFamily: "books",
-                            color: "white",
-                        }}
-                    >
-                        Connect Twitter
-                    </div>
-                    <img
-                        style={{ height: 24, width: 24 }}
-                        src={assets.icons.chevronRightWhite}
-                    />
-                </div> */}
       </div>
     </div>
   );
