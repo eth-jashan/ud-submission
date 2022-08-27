@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { assets } from "../constant/assets";
 import damboBadge from "../assets/dambo-membership.svg";
-import styles from "./dashboard.module.css";
+// import styles from "./dashboard.module.css";
 import { supabase } from "../utils/supabase";
-import { Octokit, App } from "octokit";
+import Leaderboard from "../components/Leaderboard";
+import "./style.scss";
+import Governance from "../components/Governance";
+import { getIssuesForRepo } from "../utils/githiubChecks";
 import TaskCard from "../components/TaskCard";
-import { getIssuesForRepo, getRequest } from "../utils/githiubChecks";
 
 const DashboardScreen = () => {
   const [route, setRoute] = useState("home");
@@ -23,7 +25,6 @@ const DashboardScreen = () => {
   const [devTask, setDevTask] = useState([]);
   const [marketingTask, setMarketingTask] = useState(["1", "2", "3", "4"]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(async () => {
     const issues = await getIssuesForRepo("eth-jashan", "socio-app-frontend");
     console.log(issues);
@@ -189,47 +190,59 @@ const DashboardScreen = () => {
         display: "flex",
         flexDirection: "column",
       }}
+      className="dashboard-container"
     >
-      <div
-        style={{
-          width: "70%",
-          alignSelf: "center",
-        }}
-      >
+      <div className="dashboard-main">
         {renderHeader()}
         {renderSnackBar()}
-        <div className={styles.scrollDiv}>
-          {mintMembershipBadge()}
-          <div
-            style={{
-              width: "100%",
-              border: "1px solid #E1E1E0",
-              margin: "12px 0px",
-            }}
-          />
-          <div
-            style={{
-              flexDirection: "row",
-              width: "100%",
-              display: "flex",
-              justifyContent: "space-between",
-            }}
-          >
-            <div
-              style={{ flexDirection: "column", display: "flex", width: "48%" }}
-            >
-              {marketingTask.map((x, i) => (
-                <TaskCard guildName={"marketing guild"} />
-              ))}
-            </div>
-            <div
-              style={{ flexDirection: "column", display: "flex", width: "48%" }}
-            >
-              {devTask.map((x, i) => (
-                <TaskCard guildName={"developer guild"} item={x} />
-              ))}
-            </div>
-          </div>
+        <div className="scrollDiv">
+          {route === "leaderboard" ? (
+            <Leaderboard />
+          ) : route === "governance" ? (
+            <Governance />
+          ) : (
+            <>
+              {mintMembershipBadge()}
+              <div
+                style={{
+                  width: "100%",
+                  border: "1px solid #E1E1E0",
+                  margin: "12px 0px",
+                }}
+              />
+              <div
+                style={{
+                  flexDirection: "row",
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div
+                  style={{
+                    flexDirection: "column",
+                    display: "flex",
+                    width: "48%",
+                  }}
+                >
+                  {marketingTask.map((x, i) => (
+                    <TaskCard guildName={"marketing guild"} />
+                  ))}
+                </div>
+                <div
+                  style={{
+                    flexDirection: "column",
+                    display: "flex",
+                    width: "48%",
+                  }}
+                >
+                  {devTask.map((x, i) => (
+                    <TaskCard guildName={"developer guild"} item={x} />
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

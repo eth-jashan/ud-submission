@@ -1,0 +1,22 @@
+.dashboard-container {
+  .scrollDiv {
+    overflow-y: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    /*  */
+  }
+  .dashboard-main {
+    width: 70%;
+    align-self: center;
+    padding: 1rem;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .dashboard-container {
+    .dashboard-main {
+      width: 100%;
+      align-self: center;
+    }
+  }
+}
