@@ -79,24 +79,28 @@ const ConnectScreen = () => {
   }
 
   const createUser = async () => {
-    // try {
-    //   const res = await axios.post('http://localhost:3000/createUser',{
-    //     name: "sr1",
-    //     addr: "0x81c9039F206B690918fCd5dDAd41e4D1039DD535",
-    //     discordId: "sr1#9687",
-    //     twitterId: "sr1jann"
-    //   },{
-    //     headers:{
-    //       Authorization: `${jwt}`,
-    //     }
-    //   })
-    //   console.log('ress')
-    //   return true
-    // } catch (error) {
-    //   console.log('error', error.toString())
-    // }
-    return true;
-    console.log("user", authorization.value.idToken.__raw);
+    try {
+      const res = await axios.post(
+        "http://localhost:3000/createUser",
+        {
+          name: "eth-jashan",
+          addr: "0x81c9039F206B690918fCd5dDAd41e4D1039DD535",
+          discordId: discordCode,
+          twitterId: `https://github.com/eth-jashan`,
+        },
+        {
+          headers: {
+            Authorization: `${authorization.value.idToken.__raw}`,
+          },
+        }
+      );
+      console.log("ress", res);
+      return true;
+    } catch (error) {
+      console.log("error", error.toString());
+    }
+    // return true;
+    // console.log("user", a);
   };
 
   useEffect(async () => {

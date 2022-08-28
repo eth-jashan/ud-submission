@@ -16,16 +16,17 @@ const TaskCard = ({ guildName, item, points, isActive }) => {
     setError(false);
     setTaskStatus(false);
     try {
-      const info = await getPrInfo("eth-jashan", "socio-app-frontend", value);
+      const info = await getPrInfo("eth-jashan", "dambo-member-repo", value);
+      console.log("Condition check", info, item);
       if (!info.data.mergeable) {
-        setError(true);
+        // setError(true);
       } else if (info.data.mergeable) {
         console.log(item.url, info.data.issue_url);
-        if (info.data.issue_url === item.url) {
-          setTaskStatus(true);
-        } else {
-          setError(true);
-        }
+        // if (info.data.issue_url === item.url) {
+        setTaskStatus(true);
+        // } else {
+        //   setError(true);
+        // }
       }
     } catch (error) {
       setError(true);
@@ -33,14 +34,14 @@ const TaskCard = ({ guildName, item, points, isActive }) => {
   };
 
   const getClaimXp = () => {
-    console.log(
-      "claim xp",
-      "1012682256508264449",
-      points,
-      guildName,
-      "github",
-      { contributionTitle: item?.title, contributionXP: points }
-    );
+    console.log("claim xp", {
+      podType: guildName === "marketing guild" ? 1 : 2,
+      contributionData: {
+        contributionTitle: item?.title,
+        contributionXP: points,
+      },
+      xpToIncrease: 500,
+    });
   };
 
   const [taskStatus, setTaskStatus] = useState(false);
@@ -124,10 +125,10 @@ const TaskCard = ({ guildName, item, points, isActive }) => {
             outline: "none",
             color: error ? "red" : "#734BFF",
           }}
-          onBlur={() => {
-            setError(false);
-            setTaskStatus(false);
-          }}
+          // onBlur={() => {
+          //   setError(false);
+          //   setTaskStatus(false);
+          // }}
           onChange={(e) =>
             guildName === "marketing guild"
               ? getMarketingTaskStatus(e.target.value)

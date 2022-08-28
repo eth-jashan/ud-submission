@@ -10,6 +10,7 @@ import TaskCard from "../components/TaskCard";
 import { Modal } from "antd";
 import ProfileScreen from "./ProfileScreen";
 import { useSelector } from "react-redux";
+import DashboardHeader from "../components/DashboardHeader";
 
 const DashboardScreen = () => {
   const [route, setRoute] = useState("profile");
@@ -30,9 +31,13 @@ const DashboardScreen = () => {
   const address = useSelector((x) => x.auth.accountAddress);
 
   useEffect(async () => {
-    const issues = await getIssuesForRepo("eth-jashan", "socio-app-frontend");
-    console.log(issues);
-    setDevTask(issues.data);
+    const issues = await getIssuesForRepo("eth-jashan", "dambo-member-repo");
+
+    const issuesOnly = issues.data.filter(
+      (x) => x.pull_request === null || x.pull_request === undefined
+    );
+    console.log("Issues", issuesOnly);
+    setDevTask(issuesOnly);
   }, []);
 
   const renderHeader = () => (
@@ -256,7 +261,7 @@ const DashboardScreen = () => {
       className="dashboard-container"
     >
       <div className="dashboard-main">
-        {renderHeader()}
+        <DashboardHeader />
         {renderSnackBar()}
         <div className="scrollDiv">
           {route === "leaderboard" ? (
