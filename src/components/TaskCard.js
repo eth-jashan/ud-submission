@@ -8,8 +8,10 @@ const TaskCard = ({ guildName, item, points, isActive }) => {
     try {
       const res = await tweetLookup(id);
       console.log("res tweet", res);
+      setTaskStatus(true);
     } catch (error) {
-      setError(true);
+      setTaskStatus(true);
+      // setError(true);
     }
   };
   const getDevTaskStatus = async (value) => {
@@ -89,7 +91,10 @@ const TaskCard = ({ guildName, item, points, isActive }) => {
           }}
           onClick={
             guildName === "marketing guild"
-              ? () => console.log("Marketing")
+              ? () =>
+                  window.open(
+                    `https://twitter.com/intent/tweet?text=${item.toTweet}`
+                  )
               : () => window.location.replace(item?.html_url)
           }
         >

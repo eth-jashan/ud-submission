@@ -81,10 +81,10 @@ const ConnectScreen = () => {
   const createUser = async () => {
     try {
       const res = await axios.post(
-        "http://localhost:3000/createUser",
+        "https://841d-106-206-4-13.in.ngrok.io/createUser",
         {
           name: "eth-jashan",
-          addr: "0x81c9039F206B690918fCd5dDAd41e4D1039DD535",
+          addr: accountAddress,
           discordId: discordCode,
           twitterId: `https://github.com/eth-jashan`,
         },
@@ -94,10 +94,37 @@ const ConnectScreen = () => {
           },
         }
       );
-      console.log("ress", res);
+      console.log("ress", res, github);
       return true;
     } catch (error) {
       console.log("error", error.toString());
+      return false;
+    }
+    // return true;
+    // console.log("user", a);
+  };
+
+  const joinToCommunity = async () => {
+    try {
+      const res = await axios.post(
+        "https://f543-115-110-248-75.in.ngrok.io/createUser",
+        {
+          name: "eth-jashan",
+          addr: accountAddress,
+          discordId: discordCode,
+          twitterId: `https://github.com/eth-jashan`,
+        },
+        {
+          headers: {
+            Authorization: `${authorization.value.idToken.__raw}`,
+          },
+        }
+      );
+      console.log("ress", res, github);
+      return true;
+    } catch (error) {
+      console.log("error", error.toString());
+      return false;
     }
     // return true;
     // console.log("user", a);
@@ -107,6 +134,7 @@ const ConnectScreen = () => {
     if (discordCode && authorization && github) {
       const res = await createUser();
       if (res) {
+        // fetch user info
         navigate("/dashboard");
       } else {
         message.error("error on authenticate");

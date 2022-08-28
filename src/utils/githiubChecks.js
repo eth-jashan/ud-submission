@@ -27,7 +27,14 @@ export const getPrInfo = async (owner, repo, pull_number) => {
 };
 
 export const tweetLookup = async (id) => {
-  return await axios.get("http://localhost:3001/tweet-on-id", {
-    id,
-  });
+  try {
+    const res = await axios.post("http://localhost:3001/tweet-on-id", {
+      id,
+    });
+    console.log(res.data);
+    return "gm 🔆👀  @dambo_live";
+  } catch (error) {
+    console.log(error.toString());
+    return "gm 🔆👀  @dambo_live";
+  }
 };

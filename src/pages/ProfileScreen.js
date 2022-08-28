@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import damboBadge from "../assets/dambo-membership.svg";
 import { assets } from "../constant/assets";
 import ClaimedNFT from "./ClaimedNFT";
@@ -20,6 +21,8 @@ const ProfileScreen = () => {
       chainId: 80001,
     },
   ];
+
+  const accountAddress = useSelector((x) => x.auth.accountAddress);
 
   const [tokens, setTokens] = useState([]);
 
@@ -174,7 +177,7 @@ const ProfileScreen = () => {
     </div>
   );
   useEffect(async () => {
-    await fetchAllNft("0x565CBd65Cb3e65445AfD14169003A528C985e9C7");
+    await fetchAllNft(accountAddress);
   }, []);
 
   const [route, setRoute] = useState("nft");
@@ -267,13 +270,22 @@ const ProfileScreen = () => {
           marginTop: "1rem",
         }}
       >
-        {tokens[activeChain]?.items.map(
-          (x, i) =>
-            route === "nft" && (
-              <div className="profile-list">
-                <img src={x?.external_data?.image} />
+        {tokens[activeChain]?.items.map((x, i) =>
+          route === "nft" ? (
+            <div className="profile-list">
+              <img src={x?.external_data?.image} />
+            </div>
+          ) : (
+            <div
+              style={{ border: "1px solid #E1E1E0", padding: 12 }}
+              className="profile-list"
+            >
+              <img src={x?.logo_url} />
+              <div style={{ fontFamily: "books", fontSize: "1rem" }}>
+                {x?.contract_name} : {parseFloat(x.balance) / 1e18}
               </div>
-            )
+            </div>
+          )
         )}
       </div>
     </div>

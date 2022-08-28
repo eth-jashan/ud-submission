@@ -5,7 +5,7 @@ import { supabase } from "../utils/supabase";
 import Leaderboard from "../components/Leaderboard";
 import "./style.scss";
 import Governance from "../components/Governance";
-import { getIssuesForRepo } from "../utils/githiubChecks";
+import { getIssuesForRepo, tweetLookup } from "../utils/githiubChecks";
 import TaskCard from "../components/TaskCard";
 import { Modal } from "antd";
 import ProfileScreen from "./ProfileScreen";
@@ -13,6 +13,8 @@ import { useSelector } from "react-redux";
 import DashboardHeader from "../components/DashboardHeader";
 import { IoClose } from "react-icons/io5";
 import { IoMdCheckmark } from "react-icons/io";
+import { task } from "../utils/task";
+import { getMembership } from "../utils/web3";
 
 const DashboardScreen = () => {
   const [route, setRoute] = useState("profile");
@@ -32,7 +34,7 @@ const DashboardScreen = () => {
   }
 
   const [devTask, setDevTask] = useState([]);
-  const [marketingTask, setMarketingTask] = useState(["1", "2", "3", "4"]);
+  const [marketingTask, setMarketingTask] = useState(task);
   const address = useSelector((x) => x.auth.accountAddress);
 
   useEffect(async () => {
@@ -174,11 +176,20 @@ const DashboardScreen = () => {
         {showInput ? (
           <div className="twitter-claim-input-row">
             <input
+              placeholder="Enter the twitter id"
+              style={{ outline: "none" }}
               type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
             />
-            <button>
+            <button
+              onClick={async () => {
+                const res = await tweetLookup(inputText);
+                if (res === "gm 🔆👀  @dambo_live") {
+                  console.log("claim membership");
+                }
+              }}
+            >
               <IoMdCheckmark />
             </button>
             <button onClick={() => setShowInput(false)}>
@@ -199,7 +210,16 @@ const DashboardScreen = () => {
             }}
           >
             <div
-              onClick={() => setShowInput(true)}
+              onClick={async () => {
+                // setShowInput(true);
+                // window.open(
+                //   `https://twitter.com/intent/tweet?text=gm 🔆👀  @dambo_live`
+                // );
+                await getMembership(
+                  "0xD7B74ECD61aD3a68d306094C345c587F86B3547c",
+                  "0x565CBd65Cb3e65445AfD14169003A528C985e9C7"
+                );
+              }}
               style={{
                 color: "#734BFF",
                 fontFamily: "bold",
@@ -208,6 +228,7 @@ const DashboardScreen = () => {
             >
               Share Dambo on Tweeter
             </div>
+
             <img
               alt=""
               style={{ height: 24, width: 24 }}
@@ -269,7 +290,7 @@ const DashboardScreen = () => {
                   }}
                 >
                   {marketingTask.map((x, i) => (
-                    <TaskCard guildName={"marketing guild"} />
+                    <TaskCard item={x} guildName={"marketing guild"} />
                   ))}
                 </div>
                 <div
