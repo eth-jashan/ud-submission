@@ -11,10 +11,15 @@ import { Modal } from "antd";
 import ProfileScreen from "./ProfileScreen";
 import { useSelector } from "react-redux";
 import DashboardHeader from "../components/DashboardHeader";
+import { IoClose } from "react-icons/io5";
+import { IoMdCheckmark } from "react-icons/io";
 
 const DashboardScreen = () => {
   const [route, setRoute] = useState("profile");
 
+  // const [route, setRoute] = useState("home");
+  const [showInput, setShowInput] = useState(false);
+  const [inputText, setInputText] = useState("");
   async function signInWithGithub() {
     await supabase.auth.signIn(
       {
@@ -166,14 +171,21 @@ const DashboardScreen = () => {
           dambo to claim membership
           <br /> badge
         </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-            // background: "red",
-          }}
-        >
+        {showInput ? (
+          <div className="twitter-claim-input-row">
+            <input
+              type="text"
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+            />
+            <button>
+              <IoMdCheckmark />
+            </button>
+            <button onClick={() => setShowInput(false)}>
+              <IoClose />
+            </button>
+          </div>
+        ) : (
           <div
             style={{
               width: "30%",
@@ -187,7 +199,7 @@ const DashboardScreen = () => {
             }}
           >
             <div
-              onClick={() => signInWithGithub()}
+              onClick={() => setShowInput(true)}
               style={{
                 color: "#734BFF",
                 fontFamily: "bold",
@@ -202,44 +214,7 @@ const DashboardScreen = () => {
               src={assets.icons.chevronRightPurple}
             />
           </div>
-          <div
-            style={{
-              display: "flex",
-              width: "80%",
-              alignItems: "center",
-              // background: "red",
-            }}
-          >
-            {/* <div
-              style={{
-                // width: "30%",
-                padding: "12px 16px",
-                background: "white",
-                marginTop: 32,
-                borderRadius: "24px",
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-              }}
-            >
-              <div
-                onClick={() => signInWithGithub()}
-                style={{
-                  color: "#734BFF",
-                  fontFamily: "bold",
-                  fontSize: "16px",
-                }}
-              >
-                Verify tweet to claim
-              </div>
-              <img
-                alt=""
-                style={{ height: 24, width: 24 }}
-                src={assets.icons.chevronRightPurple}
-              />
-            </div> */}
-          </div>
-        </div>
+        )}
       </div>
       <img
         alt=""
