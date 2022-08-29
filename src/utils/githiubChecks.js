@@ -2,7 +2,7 @@ import axios from "axios";
 import { Octokit } from "octokit";
 
 const octokit = new Octokit({
-  auth: "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",
+  auth: "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",
 });
 
 export const getIssuesForRepo = async (owner, repo) => {

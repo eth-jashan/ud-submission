@@ -20,6 +20,7 @@ const authSlice = createSlice({
     accountAddress: null,
     authorization: null,
     github: null,
+    claimed: true,
   },
   reducers: {
     set_web3(state, action) {
@@ -30,6 +31,10 @@ const authSlice = createSlice({
     },
     set_address(state, action) {
       state.address = action.payload.address;
+      // state.signer = action.payload.signer;
+    },
+    set_claimed(state, action) {
+      state.address = action.payload.status;
       // state.signer = action.payload.signer;
     },
     set_signing(state, action) {

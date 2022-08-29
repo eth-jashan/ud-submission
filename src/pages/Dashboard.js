@@ -9,19 +9,22 @@ import { getIssuesForRepo, tweetLookup } from "../utils/githiubChecks";
 import TaskCard from "../components/TaskCard";
 import { Modal } from "antd";
 import ProfileScreen from "./ProfileScreen";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import DashboardHeader from "../components/DashboardHeader";
 import { IoClose } from "react-icons/io5";
 import { IoMdCheckmark } from "react-icons/io";
 import { task } from "../utils/task";
-import { getMembership } from "../utils/web3";
+import { setClaimed } from "../store/actions/auth-action";
+import ClaimedNFT from "./ClaimedNFT";
+import axios from "axios";
 
 const DashboardScreen = () => {
   const [route, setRoute] = useState("profile");
-
+  const COVALENT_KEY = "ckey_5517541ba1564651939c1cf161d";
   // const [route, setRoute] = useState("home");
   const [showInput, setShowInput] = useState(false);
   const [inputText, setInputText] = useState("");
+  const dispatch = useDispatch();
   async function signInWithGithub() {
     await supabase.auth.signIn(
       {
@@ -36,6 +39,8 @@ const DashboardScreen = () => {
   const [devTask, setDevTask] = useState([]);
   const [marketingTask, setMarketingTask] = useState(task);
   const address = useSelector((x) => x.auth.accountAddress);
+
+  const claimed = useSelector((x) => x.auth.claimed);
 
   useEffect(async () => {
     const issues = await getIssuesForRepo("eth-jashan", "dambo-member-repo");
@@ -187,6 +192,7 @@ const DashboardScreen = () => {
                 const res = await tweetLookup(inputText);
                 if (res === "gm 🔆👀  @dambo_live") {
                   console.log("claim membership");
+                  dispatch(setClaimed(true));
                 }
               }}
             >
@@ -211,14 +217,14 @@ const DashboardScreen = () => {
           >
             <div
               onClick={async () => {
-                // setShowInput(true);
-                // window.open(
-                //   `https://twitter.com/intent/tweet?text=gm 🔆👀  @dambo_live`
-                // );
-                await getMembership(
-                  "0xD7B74ECD61aD3a68d306094C345c587F86B3547c",
-                  "0x565CBd65Cb3e65445AfD14169003A528C985e9C7"
+                setShowInput(true);
+                window.open(
+                  `https://twitter.com/intent/tweet?text=gm 🔆👀  @dambo_live`
                 );
+                // await getMembership(
+                //   "0xD7B74ECD61aD3a68d306094C345c587F86B3547c",
+                //   "0x565CBd65Cb3e65445AfD14169003A528C985e9C7"
+                // );
               }}
               style={{
                 color: "#734BFF",
@@ -244,6 +250,41 @@ const DashboardScreen = () => {
       />
     </div>
   );
+  const fetchMembershipNFTMetadata = async (
+    contractAddress,
+    tokenId,
+    chainId
+  ) => {
+    try {
+      const res = await axios.get(
+        `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${tokenId}/?quote-currency=USD&format=JSON&key=${COVALENT_KEY}`
+      );
+      const nftData = res?.data?.data?.items[0]?.nft_data;
+      console.log("res..", nftData[0].external_data);
+      if (nftData) {
+        setMeta(nftData[0].external_data.image);
+        //   return {
+        //     success: true,
+        //     metadata: nftData,
+        //   };
+        // } else {
+        //   return {
+        //     success: false,
+        //     metadata: null,
+        //   };
+      }
+    } catch (err) {
+      console.error("err", err);
+    }
+  };
+  const [meta, setMeta] = useState(false);
+  useEffect(async () => {
+    await fetchMembershipNFTMetadata(
+      `0x78cc9e95447eabd06786abfa48ff36b77149e7e5`,
+      3,
+      80001
+    );
+  }, [route]);
 
   return (
     <div
@@ -266,7 +307,7 @@ const DashboardScreen = () => {
             <Governance />
           ) : route === "task" ? (
             <>
-              {mintMembershipBadge()}
+              {<ClaimedNFT meta={meta} />}
               <div
                 style={{
                   width: "100%",

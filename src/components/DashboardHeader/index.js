@@ -3,8 +3,12 @@ import "./style.scss";
 import { api, utils, channels } from "@epnsproject/frontend-sdk-staging";
 import { MdNotifications } from "react-icons/md";
 import { ethers } from "ethers";
+import axios from "axios";
+import { useSelector } from "react-redux";
+// axios
 
 export default function DashboardHeader() {
+  const address = useSelector((x) => x.auth.accountAddress);
   const [showNotifs, setShowNotifs] = useState(false);
   const [notifications, setNotifications] = useState([]);
   //   const [fetchingNotifications, setFetchingNotifications] = useState(false);
@@ -65,7 +69,7 @@ export default function DashboardHeader() {
 
     //check if user is subscribed to channel
     const isSubscribed = await channels.isUserSubscribed(
-      "0x10f26D2b7aB670b4F3E7d8eD24cd60152a1CAf87",
+      "0x565CBd65Cb3e65445AfD14169003A528C985e9C7",
       "0x972C4D46cd527891ea654A2ceB37b85495179647"
     );
     if (!isSubscribed) {
@@ -74,7 +78,7 @@ export default function DashboardHeader() {
 
     console.log("details", details, isSubscribed);
 
-    const walletAddress = "0x10f26D2b7aB670b4F3E7d8eD24cd60152a1CAf87";
+    const walletAddress = "0x565CBd65Cb3e65445AfD14169003A528C985e9C7";
     const pageNumber = 1;
     const itemsPerPage = 20;
 
@@ -112,7 +116,7 @@ export default function DashboardHeader() {
           setShowMembershipModal(true);
           fetchMembershipNFTMetadata(
             "0xD7B74ECD61aD3a68d306094C345c587F86B3547c",
-            notif?.title,
+            3,
             80001
           );
         }
@@ -126,7 +130,7 @@ export default function DashboardHeader() {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     const chainId = await signer.getChainId();
-    const userAccount = "0x10f26D2b7aB670b4F3E7d8eD24cd60152a1CAf87";
+    const userAccount = "0x565CBd65Cb3e65445AfD14169003A528C985e9C7";
     //opt into a channel
     channels.optIn(signer, channelAddress, chainId, userAccount, {
       onSuccess: () => {
@@ -222,7 +226,7 @@ export default function DashboardHeader() {
             <></>
           )}
         </div>
-        0x3837...3948
+        {`${address?.slice(0, 4)}...${address?.slice(-4)}`}
         {showMembershipModal && (
           <div
             className="membership-modal-backdrop"

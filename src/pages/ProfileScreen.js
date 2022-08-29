@@ -144,7 +144,17 @@ const ProfileScreen = () => {
             }}
           >
             <div
-              onClick={() => signInWithGithub()}
+              onClick={async () => {
+                // setShowInput(true);
+                window.open(
+                  `https://twitter.com/intent/tweet?text=gm 🔆👀  @dambo_live`
+                );
+
+                // await getMembership(
+                //   "0xD7B74ECD61aD3a68d306094C345c587F86B3547c",
+                //   "0x565CBd65Cb3e65445AfD14169003A528C985e9C7"
+                // );
+              }}
               style={{
                 color: "#734BFF",
                 fontFamily: "bold",
@@ -178,10 +188,45 @@ const ProfileScreen = () => {
   );
   useEffect(async () => {
     await fetchAllNft(accountAddress);
+    await fetchMembershipNFTMetadata(
+      `0x78cc9e95447eabd06786abfa48ff36b77149e7e5`,
+      3,
+      80001
+    );
   }, []);
 
   const [route, setRoute] = useState("nft");
   const [activeChain, setActiveChain] = useState(1);
+  const [meta, setMeta] = useState(false);
+  const claimed = useSelector((x) => x.auth.claimed);
+
+  const fetchMembershipNFTMetadata = async (
+    contractAddress,
+    tokenId,
+    chainId
+  ) => {
+    try {
+      const res = await axios.get(
+        `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${tokenId}/?quote-currency=USD&format=JSON&key=${COVALENT_KEY}`
+      );
+      const nftData = res?.data?.data?.items[0]?.nft_data;
+      console.log("res..", nftData[0].external_data);
+      if (nftData) {
+        setMeta(nftData[0].external_data.image);
+        //   return {
+        //     success: true,
+        //     metadata: nftData,
+        //   };
+        // } else {
+        //   return {
+        //     success: false,
+        //     metadata: null,
+        //   };
+      }
+    } catch (err) {
+      console.error("err", err);
+    }
+  };
 
   const renderSnackBar = () => (
     <div
@@ -233,7 +278,7 @@ const ProfileScreen = () => {
   return (
     <div className="scrollDiv">
       {/* {mintMembershipBadge()} */}
-      <ClaimedNFT />
+      {<ClaimedNFT meta={meta} />}
       {renderSnackBar()}
       <div style={{ display: "flex", flexDirection: "row" }}>
         {chains.map((x, i) => (

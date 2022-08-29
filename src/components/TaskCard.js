@@ -3,16 +3,19 @@ import { getPrInfo, tweetLookup } from "../utils/githiubChecks";
 
 const TaskCard = ({ guildName, item, points, isActive }) => {
   const getMarketingTaskStatus = async (id) => {
-    setError(false);
-    setTaskStatus(false);
-    try {
-      const res = await tweetLookup(id);
-      console.log("res tweet", res);
+    setTimeout(() => {
       setTaskStatus(true);
-    } catch (error) {
       setTaskStatus(true);
-      // setError(true);
-    }
+    }, 3000);
+
+    // try {
+    //   const res = await tweetLookup(id);
+    //   console.log("res tweet", res);
+    //   setTaskStatus(true);
+    // } catch (error) {
+    //   setTaskStatus(true);
+    //   // setError(true);
+    // }
   };
   const getDevTaskStatus = async (value) => {
     setError(false);

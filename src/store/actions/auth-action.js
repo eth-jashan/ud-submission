@@ -117,6 +117,12 @@ export const setAddress = (address) => {
   };
 };
 
+export const setClaimed = (status) => {
+  return (dispatch) => {
+    dispatch(authActions.set_claimed({ status }));
+  };
+};
+
 export const setLoggedIn = (status) => {
   return (dispatch) => {
     dispatch(authActions.set_loggedIn({ status }));

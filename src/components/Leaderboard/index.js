@@ -4,44 +4,44 @@ import "./style.scss";
 export default function Leaderboard() {
   const leaderboardRankings = [
     {
-      twitterUsername: "wulfor",
-      points: 100,
+      name: "shaurya",
+      Xp: 500,
     },
     {
-      twitterUsername: "wulfor",
-      points: 100,
+      name: "wulfor",
+      Xp: 437,
     },
     {
-      twitterUsername: "wulfor",
-      points: 100,
+      name: "Jashan",
+      Xp: 418,
     },
     {
-      twitterUsername: "wulfor",
-      points: 100,
+      name: "Srijan",
+      Xp: 400,
     },
     {
-      twitterUsername: "wulfor",
-      points: 100,
+      name: "Shivam",
+      Xp: 344,
     },
     {
-      twitterUsername: "wulfor",
-      points: 100,
+      name: "JSON",
+      Xp: 310,
     },
     {
-      twitterUsername: "wulfor",
-      points: 100,
+      name: "Chacha Chaudhary",
+      Xp: 220,
     },
     {
-      twitterUsername: "wulfor",
-      points: 100,
+      name: "Infi",
+      Xp: 190,
     },
     {
-      twitterUsername: "wulfor",
-      points: 100,
+      name: "Aviral",
+      Xp: 160,
     },
     {
-      twitterUsername: "wulfor",
-      points: 100,
+      name: "Somesh",
+      Xp: 130,
     },
   ];
   return (
@@ -58,8 +58,8 @@ export default function Leaderboard() {
             <div className="ranking-row">
               <div className="ranking-index">{index + 1}</div>
               <div className="ranking-ranker-info">
-                <div>{rank?.twitterUsername}</div>
-                <div>{rank?.points}</div>
+                <div>{rank?.name}</div>
+                <div>{rank?.Xp}</div>
               </div>
             </div>
           ))}
