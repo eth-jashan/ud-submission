@@ -78,68 +78,9 @@ const ConnectScreen = () => {
     );
   }
 
-  const createUser = async () => {
-    // try {
-    //   const res = await axios.post(
-    //     "https://841d-106-206-4-13.in.ngrok.io/createUser",
-    //     {
-    //       name: "eth-jashan",
-    //       addr: accountAddress,
-    //       discordId: discordCode,
-    //       twitterId: `https://github.com/eth-jashan`,
-    //     },
-    //     {
-    //       headers: {
-    //         Authorization: `${authorization.value.idToken.__raw}`,
-    //       },
-    //     }
-    //   );
-    //   console.log("ress", res, github);
-    //   return true;
-    // } catch (error) {
-    //   console.log("error", error.toString());
-    //   return false;
-    // }
-    // return true;
-    // console.log("user", a);
-    console.log(authorization.value.idToken.__raw);
-  };
-
-  const joinToCommunity = async () => {
-    try {
-      const res = await axios.post(
-        "https://f543-115-110-248-75.in.ngrok.io/createUser",
-        {
-          name: "eth-jashan",
-          addr: accountAddress,
-          discordId: discordCode,
-          twitterId: `https://github.com/eth-jashan`,
-        },
-        {
-          headers: {
-            Authorization: `${authorization.value.idToken.__raw}`,
-          },
-        }
-      );
-      console.log("ress", res, github);
-      return true;
-    } catch (error) {
-      console.log("error", error.toString());
-      return false;
-    }
-    // return true;
-    // console.log("user", a);
-  };
-
   useEffect(async () => {
     if (discordCode && authorization && github) {
-      const res = await createUser();
-      // if (res) {
-      // fetch user info
-      navigate("/dashboard");
-      // } else {
-      //   message.error("error on authenticate");
-      // }
+      // navigate("/dashboard");
     }
   });
 
@@ -147,14 +88,14 @@ const ConnectScreen = () => {
     <div className="connect-socials-screen-container">
       <div className="socials-screen-left">
         <div className="socials-left-header">
-          <div className="project-name">dambo</div>
+          <div className="project-name">DAG Token</div>
           <div className="twitter-link">twitter</div>
         </div>
         <div className="socials-gm">gm gm</div>
         <div className="socials-dao-info">
-          DamboDAO is first of its kind disposable DAO. 20% of our winnings from
-          the hackathon will go to DAO treasury and all members will vote on how
-          to spend it(Some Drinks maybe!!)
+          DAGToken is first of its kind community incentivising tokens.
+          Communities can create conditions, so that people can mint their
+          tokens.
         </div>
       </div>
       <div className="socials-screen-right">
@@ -203,7 +144,7 @@ const ConnectScreen = () => {
               </div>
             ))}
           </div>
-          <div
+          {/* <div
             style={{
               width: "100%",
               marginTop: 20,
@@ -263,7 +204,7 @@ const ConnectScreen = () => {
                 src={assets.icons.chevronRightWhite}
               />
             )}
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
