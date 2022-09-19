@@ -52,7 +52,13 @@ const SpecialShape = (
 );
 
 const PolyShape = (
-  <symbol viewBox="0 0 88 72" id="poly" width="88" height="88">
+  <symbol
+    onClick={() => console.log("pressed poly")}
+    viewBox="0 0 88 72"
+    id="poly"
+    width="88"
+    height="88"
+  >
     <path d="M 0 36 18 0 70 0 88 36 70 72 18 72Z" />
   </symbol>
 );
@@ -66,6 +72,7 @@ const SkinnyShape = (
     onClick={() => console.log("tim")}
   >
     <rect x="0" y="0" rx="2" ry="2" width="154" height="54" />
+    <div style={{ height: 12, width: 20, background: "red" }}></div>
   </symbol>
 );
 

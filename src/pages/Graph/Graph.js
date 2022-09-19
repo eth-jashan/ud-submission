@@ -239,7 +239,7 @@ export default function Graph() {
   const getTitle = (title) => {
     switch (title) {
       case "poly":
-        return "ERC 721 Adapter";
+        return "Balance";
       case "skinny":
         return "operator";
     }
@@ -302,7 +302,6 @@ export default function Graph() {
   function onSelectNode(viewNode, event) {
     if (viewNode) {
       console.log("on select node");
-      // handleOpen();
       console.log(viewNode);
       console.log(event);
       console.log(edges);
@@ -314,7 +313,6 @@ export default function Graph() {
   function onDeleteNode(viewNode, nodeId, nodeArr) {
     console.log("on delete node");
     console.log(viewNode);
-
     // Delete any connected edges
     const newEdges = edges.filter((edge, i) => {
       return edge.source !== viewNode.id && edge.target !== viewNode.id;
