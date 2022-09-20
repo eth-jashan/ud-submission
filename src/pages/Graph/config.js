@@ -10,8 +10,8 @@ export const NODE_KEY = "id"; // Key used to identify nodes
 // so this has to be passed in if that behavior is desired.
 export const EMPTY_TYPE = "empty";
 export const CUSTOM_EMPTY_TYPE = "customEmpty"; // Empty node type
-export const POLY_TYPE = "poly";
-export const SPECIAL_TYPE = "special";
+export const ADAPTER_TYPE = "poly";
+export const MY_DOT = "myDot";
 export const SKINNY_TYPE = "skinny";
 export const SPECIAL_CHILD_SUBTYPE = "specialChild";
 export const EMPTY_EDGE_TYPE = "emptyEdge";
@@ -20,8 +20,9 @@ export const SPECIAL_EDGE_TYPE = "specialEdge";
 export const nodeTypes = [
   EMPTY_TYPE,
   CUSTOM_EMPTY_TYPE,
-  POLY_TYPE,
-  SPECIAL_TYPE,
+  // POLY_TYPE,
+  // SPECIAL_TYPE,
+  MY_DOT,
   SKINNY_TYPE,
 ];
 export const edgeTypes = [EMPTY_EDGE_TYPE, SPECIAL_EDGE_TYPE];
@@ -51,7 +52,7 @@ const SpecialShape = (
   </symbol>
 );
 
-const PolyShape = (
+const BalanceAdapter = (
   <symbol
     onClick={() => console.log("pressed poly")}
     viewBox="0 0 88 72"
@@ -63,7 +64,13 @@ const PolyShape = (
   </symbol>
 );
 
-const SkinnyShape = (
+const OperatorShape = (
+  <symbol viewBox="0 0 100 100" id="myDot">
+    <circle cx="50" cy="50" r="45" />
+  </symbol>
+);
+
+const LensCheck = (
   <symbol
     viewBox="0 0 154 54"
     width="154"
@@ -72,7 +79,6 @@ const SkinnyShape = (
     onClick={() => console.log("tim")}
   >
     <rect x="0" y="0" rx="2" ry="2" width="154" height="54" />
-    <div style={{ height: 12, width: 20, background: "red" }}></div>
   </symbol>
 );
 
@@ -126,20 +132,25 @@ export default {
     },
   },
   NodeTypes: {
-    special: {
-      shape: SpecialShape,
-      shapeId: "#special",
-      typeText: "Special",
-    },
+    // special: {
+    //   shape: SpecialShape,
+    //   shapeId: "#special",
+    //   typeText: "Special",
+    // },
     skinny: {
-      shape: SkinnyShape,
+      shape: OperatorShape,
       shapeId: "#skinny",
-      typeText: "Skinny",
+      // typeText: "Operator",
     },
     poly: {
-      shape: PolyShape,
+      shape: BalanceAdapter,
       shapeId: "#poly",
-      typeText: "Poly",
+      // typeText: "Adapter",
+    },
+    myDot: {
+      shape: LensCheck,
+      shapeId: "#myDot",
+      // typeText: "Lens",
     },
   },
 };

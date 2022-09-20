@@ -2,25 +2,24 @@ import {
   GraphView, // required
   //  type LayoutEngineType // required to change the layoutEngineType, otherwise optional
 } from "react-digraph";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import Modal from "@mui/material/Modal";
+
 import React, { useState, useRef } from "react";
 
-import { Grid, Paper } from "@material-ui/core";
+// import { Grid, Paper, Select } from "@material-ui/core";
 
 import "./Graph.css";
 import {
   default as nodeConfig,
-  POLY_TYPE,
-  SPECIAL_TYPE,
+  // POLY_TYPE,
+  MY_DOT,
   SKINNY_TYPE,
+  ADAPTER_TYPE,
 } from "./config";
 import uuid from "react-uuid";
 import Tree from "rc-tree";
 import { ethers } from "ethers";
 import { getBytes4HexKeccack, TreeNode } from "../../encoder";
+import ModalComponent from "../../components/Modal";
 
 const sample = {
   edges: [],
@@ -50,9 +49,9 @@ export default function Graph() {
   const [source, setSources] = useState([]);
   const [leaves, setLeaves] = useState([]);
   const [operators, setOperators] = useState([]);
+
   const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+
   const myRef = useRef("someval?");
 
   const [selected, setSelected] = useState(null);
@@ -119,6 +118,7 @@ export default function Graph() {
   };
 
   const [tree, setTree] = useState();
+
   const createTree = () => {
     let rootNodeId = getRootOfTree();
     let calculatedId = [];
@@ -241,6 +241,8 @@ export default function Graph() {
       case "poly":
         return "Balance";
       case "skinny":
+        return "Lens";
+      case "myDot":
         return "operator";
     }
   };
@@ -250,6 +252,8 @@ export default function Graph() {
       case "poly":
         return "leaf";
       case "skinny":
+        return "leaf";
+      case "myDot":
         return "operator";
     }
   };
@@ -299,12 +303,28 @@ export default function Graph() {
     setNodes(mycopy);
   }
 
+  const [info, setInfo] = useState([]);
+
+  const addInfo = (data) => {
+    const check = info.filter((x) => x.id === data.id);
+    if (check.length > 0) {
+      const newCheck = info.filter((x) => x.id !== data.id);
+      newCheck.push(data);
+      setInfo(newCheck);
+    } else {
+      setInfo((prev) => [...prev, data]);
+    }
+    setSelected(false);
+    setOpen(false);
+  };
+  console.log("id to input mapping!", info, tree);
   function onSelectNode(viewNode, event) {
     if (viewNode) {
       console.log("on select node");
       console.log(viewNode);
       console.log(event);
       console.log(edges);
+      setOpen(true);
       // Deselect events will send Null viewNode
       setSelected(viewNode);
     }
@@ -391,62 +411,36 @@ export default function Graph() {
         backgroundColor: "white",
         height: "100%",
         width: "100%",
-        textAlign: "left",
+        display: "flex",
+        alignItems: "center",
       }}
     >
       <br />
-      <Grid container direction="row">
-        <Grid item>
-          <Paper
-            elevation={1}
-            //variant="outlined"
-            style={{ height: "22vh", backgroundColor: "white" }}
-          >
-            <Grid container direction="column" spacing={1}>
-              <Grid item sm={1}>
-                <button
-                  className="NodeButton"
-                  onClick={() => onCreateNode(POLY_TYPE)}
-                >
-                  ERC 721
-                </button>
-              </Grid>
-              <Grid item xs={1}>
-                <button
-                  className="NodeButton"
-                  onClick={() => onCreateNode(SKINNY_TYPE)}
-                >
-                  Operator
-                </button>
-              </Grid>
+      <div>
+        <div>
+          <div style={{ margin: "12px" }}>
+            <button
+              className="NodeButton"
+              onClick={() => onCreateNode(ADAPTER_TYPE)}
+            >
+              ERC 721
+            </button>
+            <button
+              className="NodeButton"
+              onClick={() => onCreateNode(SKINNY_TYPE)}
+            >
+              Lens Protocol
+            </button>
+            <button className="NodeButton" onClick={() => onCreateNode(MY_DOT)}>
+              Operator
+            </button>
+            <button className="NodeButton" onClick={() => createTree()}>
+              Check tree
+            </button>
+          </div>
+        </div>
 
-              <Grid item sm={1}>
-                <button className="NodeButton" onClick={() => createTree()}>
-                  Check Tree
-                </button>
-              </Grid>
-
-              <Grid item xs={1}>
-                <div
-                  style={{
-                    marginTop: "3vh",
-                    backgroundColor: "white",
-                    width: "12vw",
-                  }}
-                >
-                  KeyBoard Shortcuts :
-                  <br />
-                  1. Shift + click on graph to create new node
-                  <br />
-                  2. Shift + click(on node), drag, and drop(on node) to create
-                  new edge
-                </div>
-              </Grid>
-            </Grid>
-          </Paper>
-        </Grid>
-
-        <Grid item>
+        <div>
           <div
             style={{
               height: "70vh",
@@ -466,33 +460,35 @@ export default function Graph() {
               allowMultiselect={true}
               onCreateNode={(x, y) => onCreateNodeClick(x, y)}
               onUpdateNode={(node) => onUpdateNode(node)}
+              onSwapNode={() => console.log("firedddd")}
               onDeleteNode={(viewNode, nodeId, nodeArr) =>
                 onDeleteNode(viewNode, nodeId, nodeArr)
               }
               onCreateEdge={(src, tgt) => onCreateEdge(src, tgt)}
               onSwapEdge={(src, tgt, view) => onSwapEdge(src, tgt, view)}
               onDeleteEdge={(e, edges) => onDeleteEdge(e, edges)}
-              onSelectNode={(node, e) => onSelectNode(node, e)}
+              // onSelectNode={(node, e) => onSelectNode(node, e)}
               onSelectEdge={(edge) => onSelectEdge(edge)}
             />
           </div>
-        </Grid>
-      </Grid>
-      <Modal
+        </div>
+      </div>
+      {/* <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Text in a modal
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-          </Typography>
-        </Box>
-      </Modal>
+      ></Modal> */}
+      {open && selected && (
+        <ModalComponent
+          onClose={() => {
+            setSelected(false);
+            setOpen(false);
+          }}
+          onConfirm={(id, data) => addInfo(id, data)}
+          selected={selected}
+        />
+      )}
     </div>
   );
 }
