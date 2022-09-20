@@ -18,9 +18,9 @@ import {
 import uuid from "react-uuid";
 import Tree from "rc-tree";
 import { ethers } from "ethers";
-import { getBytes4HexKeccack, TreeNode } from "../../encoder";
+import { encodeConditions, getBytes4HexKeccack, TreeNode } from "../../encoder";
 import ModalComponent from "../../components/Modal";
-
+import activityTokenAbi from "../../abi/damboTokens.json";
 const sample = {
   edges: [],
   nodes: [],
@@ -119,6 +119,11 @@ export default function Graph() {
 
   const [tree, setTree] = useState();
 
+  const getElementOnId = (id) => {
+    const searchArray = info.filter((x) => x.id === id);
+    return searchArray[0];
+  };
+
   const createTree = () => {
     let rootNodeId = getRootOfTree();
     let calculatedId = [];
@@ -129,9 +134,9 @@ export default function Graph() {
     );
     let rootNode = new TreeNode(
       rootNodeId,
-      [getBytes4HexKeccack("and")],
+      [getBytes4HexKeccack(getElementOnId(rootNodeId)?.operator)],
       true,
-      "and"
+      getElementOnId(rootNodeId)?.operator
     );
 
     relationalArray.push({ parent: rootNode, children: [] });
@@ -147,9 +152,14 @@ export default function Graph() {
             x.source,
             [
               erc721Address.slice(2),
-              "0xb6702780e4792edf7c4d61b09809240a2a9c4d76".slice(2),
-              getBytes4HexKeccack("gt"),
-              ethers.utils.defaultAbiCoder.encode(["uint256"], [0]).slice(2),
+              getElementOnId(x.source)?.contractAddress.slice(2),
+              getBytes4HexKeccack(getElementOnId(x.source)?.operatorType),
+              ethers.utils.defaultAbiCoder
+                .encode(
+                  ["uint256"],
+                  [parseInt(getElementOnId(x.source)?.threshold)]
+                )
+                .slice(2),
             ],
             false,
             "ERC721BalanceThreshold"
@@ -168,9 +178,9 @@ export default function Graph() {
         relationalArray.push({
           parent: new TreeNode(
             rootNodeId,
-            [getBytes4HexKeccack("or")],
+            [getElementOnId(rootNodeId)?.operator],
             true,
-            "or"
+            getElementOnId(rootNodeId)?.operator
           ),
           children: [],
         });
@@ -178,7 +188,12 @@ export default function Graph() {
         leafIds.forEach((x) => {
           if (operators.includes(x.source)) {
             relationalArray[i + 1].children.push(
-              new TreeNode(x.source, [getBytes4HexKeccack("or")], true, "or")
+              new TreeNode(
+                x.source,
+                [getElementOnId(x.source)?.operator],
+                true,
+                getElementOnId(x?.source)?.operator
+              )
             );
             rootNodeId = x.source;
           } else {
@@ -187,10 +202,10 @@ export default function Graph() {
                 x.source,
                 [
                   erc721Address.slice(2),
-                  "0xb6702780e4792edf7c4d61b09809240a2a9c4d76".slice(2),
-                  getBytes4HexKeccack("gt"),
+                  getElementOnId(x.source)?.contractAddress.slice(2),
+                  getBytes4HexKeccack(getElementOnId(x.source)?.operatorType),
                   ethers.utils.defaultAbiCoder
-                    .encode(["uint256"], [0])
+                    .encode(["uint256"], [getElementOnId(x?.source)?.threshold])
                     .slice(2),
                 ],
                 false,
@@ -233,7 +248,6 @@ export default function Graph() {
           rootNode = newParent.parent;
         }
       });
-    console.log("treee", tree);
   };
 
   const getTitle = (title) => {
@@ -436,6 +450,33 @@ export default function Graph() {
             </button>
             <button className="NodeButton" onClick={() => createTree()}>
               Check tree
+            </button>
+            <button
+              className="NodeButton"
+              onClick={async () => {
+                const root = encodeConditions(tree);
+                console.log("tree", root);
+                if (root) {
+                  // run activity token function !!!!
+                  const ethereum = window.ethereum;
+                  const accounts = await ethereum.request({
+                    method: "eth_requestAccounts",
+                  });
+                  console.log("accounts!!!", accounts);
+                  const provider = new ethers.providers.Web3Provider(ethereum);
+                  const walletAddress = accounts[0]; // first account in MetaMask
+                  const signer = provider.getSigner(walletAddress);
+                  const USDTContract = new ethers.Contract(
+                    "0x8B5107218F962F8CEceA33d835feE4AE85a17b79",
+                    activityTokenAbi.abi,
+                    signer
+                  );
+                  const res = await (await USDTContract.setup(0, root)).wait();
+                  console.log("ress", res);
+                }
+              }}
+            >
+              Create Bytes
             </button>
           </div>
         </div>
