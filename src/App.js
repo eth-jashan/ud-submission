@@ -8,6 +8,7 @@ import AppContext from "./appContext";
 import ConnectScreen from "./pages/ConnectScreen";
 import Graph from "./pages/Graph/Graph";
 import CommunityList from "./pages/CommunityList";
+import DashboardScreen from "./pages/Dashboard";
 
 function App() {
   dayjs.extend(relativeTimePlugin);
@@ -20,6 +21,7 @@ function App() {
           <Route path="/" element={<ConnectScreen />} />
           <Route path="/list" element={<CommunityList />} />
           <Route path="/graph" element={<Graph />} />
+          <Route path="/dashboard" element={<DashboardScreen />} />
         </Routes>
       </div>
     </div>
