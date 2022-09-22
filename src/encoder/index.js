@@ -17,12 +17,11 @@ export const encodeConditions = (root) => {
   const result = [];
 
   stack.push(root);
-
+  console.log("Stack length", stack.length);
   while (stack.length > 0) {
     let current = stack.pop();
-    // console.log(current);
     result.push(current.get_bytes());
-
+    console.log(current.right, current.left);
     if (current.right) stack.push(current.right);
     if (current.left) stack.push(current.left);
   }

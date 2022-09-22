@@ -4,7 +4,9 @@ import {
 } from "react-digraph";
 
 import React, { useState, useRef } from "react";
-
+import { MdAccountBalance } from "react-icons/md";
+import { GiFern } from "react-icons/gi";
+import { VscSymbolOperator } from "react-icons/vsc";
 // import { Grid, Paper, Select } from "@material-ui/core";
 
 import "./Graph.css";
@@ -21,6 +23,7 @@ import { ethers } from "ethers";
 import { encodeConditions, getBytes4HexKeccack, TreeNode } from "../../encoder";
 import ModalComponent from "../../components/Modal";
 import activityTokenAbi from "../../abi/damboTokens.json";
+import axios from "axios";
 const sample = {
   edges: [],
   nodes: [],
@@ -124,10 +127,12 @@ export default function Graph() {
     return searchArray[0];
   };
 
+  const [treeCreated, setTreeCreated] = useState(false);
+
   const createTree = () => {
     let rootNodeId = getRootOfTree();
     let calculatedId = [];
-    const erc721Address = "0x249f86Fe21BaB5497D8172aCED59a5598F6526Af";
+    const erc721Address = "0x4CC04A01D82135F16D8c35FE5e93c7f54679ABA0";
     let relationalArray = [];
     const leafIds = edges.filter(
       (x) => x.target === rootNodeId && operators.includes(x.target)
@@ -167,6 +172,8 @@ export default function Graph() {
         );
       }
     });
+
+    console.log(relationalArray);
 
     operators.forEach((x, i) => {
       if (
@@ -217,7 +224,7 @@ export default function Graph() {
         });
       }
     });
-
+    console.log("relation", relationalArray);
     let rootNodes;
     relationalArray
       .slice()
@@ -228,26 +235,26 @@ export default function Graph() {
           root.set_left(item.children[0]);
           root.set_right(item.children[1]);
           console.log(root, item);
-          setTree(root);
           rootNodes = root;
+          console.log(rootNode);
         } else if (i === relationalArray.length - 1) {
-          console.log("item last", item);
           const topTree = item.parent;
           topTree.set_left(item.children[0]);
-          topTree.set_right(rootNode);
+          topTree.set_right(rootNodes);
           setTree(topTree);
         } else {
           const newParent = item;
           newParent.children.forEach((x) => {
-            console.log(x);
             if (x.id !== rootNode.id) {
               newParent.parent.set_left(rootNode);
               newParent.parent.set_right(x);
             }
           });
-          rootNode = newParent.parent;
+          rootNodes = newParent.parent;
+          console.log("Final root", rootNodes);
         }
       });
+    setTreeCreated(true);
   };
 
   const getTitle = (title) => {
@@ -418,75 +425,229 @@ export default function Graph() {
     // implement find index by id first
   }
 
+  const renderHeader = () => (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        padding: "1rem 1rem",
+        alignItems: "center",
+        borderBottom: "1px solid #E1E1E0",
+        width: "100%",
+      }}
+    >
+      <div style={{ fontFamily: "bold", fontSize: "1rem" }}>DAGToken</div>
+      <div
+        style={{
+          fontFamily: "bold",
+          fontSize: "1rem",
+          color: "#734BFF",
+        }}
+      >
+        {`${"0x565CBd65Cb3e65445AfD14169003A528C985e9C7"?.slice(
+          0,
+          4
+        )}...${"0x565CBd65Cb3e65445AfD14169003A528C985e9C7"?.slice(-4)}`}
+      </div>
+    </div>
+  );
+
+  const deployConditionTree = async () => {
+    console.log("Root", tree.length);
+    const root = encodeConditions(tree);
+    console.log("tree", root);
+    try {
+      const res = await axios.post(
+        "https://is3otkef0k.execute-api.us-east-1.amazonaws.com/Prod/graph",
+        {
+          table: "rule",
+          name: "test_rule",
+          bytes:
+            "0x211efb2e4CC04A01D82135F16D8c35FE5e93c7f54679ABA0B20F972552633A1E8e9562Ce5Ad5Ec415D47909dfbdf50ae00000000000000000000000000000000000000000000000000000000000000004CC04A01D82135F16D8c35FE5e93c7f54679ABA0B20F972552633A1E8e9562Ce5Ad5Ec415D47909de22ffa0d000000000000000000000000000000000000000000000000000000000000000d",
+          graph: "test_graph",
+          meatadata_uri: "hm7DsIqUIReq3OVZAsBfbD4Qr_dP3Eu1TgBVzP6Cuyw",
+          token_id: 0,
+          creator: "0x565CBd65Cb3e65445AfD14169003A528C985e9C7",
+        }
+      );
+      console.log(res.data);
+    } catch (error) {
+      console.log(error.toString());
+    }
+    if (root) {
+      // run activity token function !!!!
+      const ethereum = window.ethereum;
+      const accounts = await ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      console.log("accounts!!!", accounts);
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const walletAddress = accounts[0]; // first account in MetaMask
+      const signer = provider.getSigner(walletAddress);
+      const USDTContract = new ethers.Contract(
+        "0x8b6aF8210816593B1be8a62B14Cf94E7D8DA5Aa2",
+        activityTokenAbi.abi,
+        signer
+      );
+      // const res = await (
+      //   await USDTContract.setup(
+      //     0,
+      //     root,
+      //     "hm7DsIqUIReq3OVZAsBfbD4Qr_dP3Eu1TgBVzP6Cuyw"
+      //   )
+      // ).wait();
+      // const res = await USDTContract.checkValidity(
+      //   0,
+      //   "0x211efb2e4CC04A01D82135F16D8c35FE5e93c7f54679ABA0B20F972552633A1E8e9562Ce5Ad5Ec415D47909dfbdf50ae00000000000000000000000000000000000000000000000000000000000000004CC04A01D82135F16D8c35FE5e93c7f54679ABA0B20F972552633A1E8e9562Ce5Ad5Ec415D47909de22ffa0d000000000000000000000000000000000000000000000000000000000000000d"
+      // );
+      console.log("ress", res);
+    }
+  };
+
   return (
     <div
       id="graph"
       style={{
-        backgroundColor: "white",
-        height: "100%",
-        width: "100%",
+        height: "100vh",
+        width: "100vw",
         display: "flex",
         alignItems: "center",
+        flexDirection: "column",
       }}
     >
-      <br />
-      <div>
-        <div>
-          <div style={{ margin: "12px" }}>
-            <button
-              className="NodeButton"
+      {renderHeader()}
+      <div
+        style={{
+          flexDirection: "row",
+          display: "flex",
+          width: "100%",
+          alignItems: "center",
+          background: "#734BFF",
+        }}
+      >
+        <div
+          style={{
+            width: "8%",
+            padding: 12,
+            alignItems: "center",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            height: "100%",
+          }}
+        >
+          <div>
+            <div
               onClick={() => onCreateNode(ADAPTER_TYPE)}
-            >
-              ERC 721
-            </button>
-            <button
-              className="NodeButton"
-              onClick={() => onCreateNode(SKINNY_TYPE)}
-            >
-              Lens Protocol
-            </button>
-            <button className="NodeButton" onClick={() => onCreateNode(MY_DOT)}>
-              Operator
-            </button>
-            <button className="NodeButton" onClick={() => createTree()}>
-              Check tree
-            </button>
-            <button
-              className="NodeButton"
-              onClick={async () => {
-                const root = encodeConditions(tree);
-                console.log("tree", root);
-                if (root) {
-                  // run activity token function !!!!
-                  const ethereum = window.ethereum;
-                  const accounts = await ethereum.request({
-                    method: "eth_requestAccounts",
-                  });
-                  console.log("accounts!!!", accounts);
-                  const provider = new ethers.providers.Web3Provider(ethereum);
-                  const walletAddress = accounts[0]; // first account in MetaMask
-                  const signer = provider.getSigner(walletAddress);
-                  const USDTContract = new ethers.Contract(
-                    "0x8B5107218F962F8CEceA33d835feE4AE85a17b79",
-                    activityTokenAbi.abi,
-                    signer
-                  );
-                  const res = await (await USDTContract.setup(0, root)).wait();
-                  console.log("ress", res);
-                }
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
               }}
             >
-              Create Bytes
-            </button>
+              <MdAccountBalance color="white" size={32} />
+              <div
+                style={{
+                  color: "white",
+                  fontFamily: "books",
+                  fontSize: "1rem",
+                }}
+              >
+                Balances
+              </div>
+            </div>
+            <div
+              onClick={() => onCreateNode(SKINNY_TYPE)}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                margin: "1.5rem 0rem",
+              }}
+            >
+              <GiFern color="white" size={32} />
+              <div
+                style={{
+                  color: "white",
+                  fontFamily: "books",
+                  fontSize: "1rem",
+                }}
+              >
+                Lens
+              </div>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+              onClick={() => onCreateNode(MY_DOT)}
+            >
+              <VscSymbolOperator color="white" size={32} />
+              <div
+                style={{
+                  color: "white",
+                  fontFamily: "books",
+                  fontSize: "1rem",
+                }}
+              >
+                Operators
+              </div>
+            </div>
           </div>
         </div>
 
-        <div>
+        <div style={{ width: "92%", background: "#734BFF" }}>
           <div
             style={{
-              height: "70vh",
-              width: "86vw",
+              width: "100%",
+              padding: 12,
+              background: "black",
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <div
+              style={{ color: "white", fontSize: "1rem", fontFamily: "books" }}
+            >
+              Create Condition Tree
+            </div>
+            <div
+              style={{
+                padding: "0.5rem",
+                background: "#734BFF",
+                width: 200,
+                borderRadius: 4,
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <div
+                style={{
+                  color: "white",
+                  fontSize: "12px",
+                  fontFamily: "books",
+                }}
+                onClick={async () => {
+                  !treeCreated ? createTree() : await deployConditionTree();
+                }}
+              >
+                {!treeCreated ? "Create Tree" : "Deploy Tree"}
+              </div>
+            </div>
+          </div>
+          <div
+            style={{
+              height: "90vh",
+              width: "100%",
               backgroundColor: "black",
+              borderRadius: "1rem",
             }}
           >
             <GraphView
@@ -514,12 +675,6 @@ export default function Graph() {
           </div>
         </div>
       </div>
-      {/* <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      ></Modal> */}
       {open && selected && (
         <ModalComponent
           onClose={() => {

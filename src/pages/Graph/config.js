@@ -53,14 +53,8 @@ const SpecialShape = (
 );
 
 const BalanceAdapter = (
-  <symbol
-    onClick={() => console.log("pressed poly")}
-    viewBox="0 0 88 72"
-    id="poly"
-    width="88"
-    height="88"
-  >
-    <path d="M 0 36 18 0 70 0 88 36 70 72 18 72Z" />
+  <symbol viewBox="0 0 100 100" id="poly">
+    <circle cx="50" cy="50" r="45" />
   </symbol>
 );
 
@@ -71,14 +65,8 @@ const OperatorShape = (
 );
 
 const LensCheck = (
-  <symbol
-    viewBox="0 0 154 54"
-    width="154"
-    height="54"
-    id="skinny"
-    onClick={() => console.log("tim")}
-  >
-    <rect x="0" y="0" rx="2" ry="2" width="154" height="54" />
+  <symbol viewBox="0 0 100 100" id="skinny">
+    <circle cx="50" cy="50" r="45" />
   </symbol>
 );
 
