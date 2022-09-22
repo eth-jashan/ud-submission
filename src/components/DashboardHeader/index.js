@@ -19,15 +19,15 @@ export default function DashboardHeader() {
   const lastReadNotificationsLength = useRef(0);
   const [nftData, setNftData] = useState(null);
 
-  useEffect(() => {
-    fetchNotifications(true);
-    const interval = setInterval(() => {
-      // console.log("This will be called every 2 seconds");
-      fetchNotifications();
-    }, 2000);
+  // useEffect(() => {
+  //   fetchNotifications(true);
+  //   const interval = setInterval(() => {
+  //     // console.log("This will be called every 2 seconds");
+  //     fetchNotifications();
+  //   }, 2000);
 
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   const fetchMembershipNFTMetadata = async (
     contractAddress,
@@ -76,7 +76,7 @@ export default function DashboardHeader() {
       setHasOptedForNotifications(false);
     }
 
-    console.log("details", details, isSubscribed);
+    // console.log("details", details, isSubscribed);
 
     const walletAddress = "0x565CBd65Cb3e65445AfD14169003A528C985e9C7";
     const pageNumber = 1;
@@ -166,7 +166,7 @@ export default function DashboardHeader() {
       }}
       className="dashboard-header-container"
     >
-      <div style={{ fontFamily: "bold", fontSize: "1rem" }}>dambo</div>
+      <div style={{ fontFamily: "bold", fontSize: "1rem" }}>DAGToken</div>
       <div
         style={{
           fontFamily: "bold",

@@ -9,6 +9,7 @@ import ConnectScreen from "./pages/ConnectScreen";
 import Graph from "./pages/Graph/Graph";
 import CommunityList from "./pages/CommunityList";
 import TokenSetup from "./pages/TokenSetup";
+import DashboardScreen from "./pages/Dashboard";
 
 function App() {
   dayjs.extend(relativeTimePlugin);
@@ -22,6 +23,7 @@ function App() {
           <Route path="/list" element={<CommunityList />} />
           <Route path="/graph" element={<Graph />} />
           <Route path="/setup" element={<TokenSetup />} />
+          <Route path="/dashboard" element={<DashboardScreen />} />
         </Routes>
       </div>
     </div>
