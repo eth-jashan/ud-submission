@@ -3,6 +3,11 @@ import { Input } from "antd";
 import upload from "../../assets/Icons/upload.svg";
 import right_arrow from "../../assets/Icons/right_arrow_white.svg";
 import { message, Upload } from "antd";
+import axios from "axios";
+import { id } from "@ethersproject/hash";
+import { useDispatch } from "react-redux";
+import { graphSetup } from "../../store/actions/auth-action";
+import { useNavigate } from "react-router";
 
 const { Dragger } = Upload;
 
@@ -28,8 +33,9 @@ const TokenSetup = () => {
       // } else if (status === "error") {
       //   message.error(`${info.file.name} file upload failed.`);
       // }
-      console.log("Uploaded Image", info.file);
+      console.log("Uploaded Image", info.file.originFileObj);
       console.log(info.file.originFileObj);
+      setFile(info.file.originFileObj);
       setImageUrl(URL.createObjectURL(info.file.originFileObj));
     },
     onDrop(e) {
@@ -37,7 +43,7 @@ const TokenSetup = () => {
     },
   };
 
-  new Blob([info.file.originFileObj], { type: "image/jpeg" });
+  // new Blob([info.file.originFileObj], { type: "image/jpeg" });
 
   const renderHeader = () => (
     <div
@@ -66,6 +72,29 @@ const TokenSetup = () => {
       </div>
     </div>
   );
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const setupForm = async () => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("name", name);
+    formData.append("description", description);
+    const res = await axios.post(
+      `http://localhost:3001/arweave_server/membership`,
+      formData
+    );
+    console.log("response", res);
+    if (res.data.data[0].metadata) {
+      dispatch(
+        graphSetup(
+          name,
+          description,
+          `http://arweave.net/${res.data.data[0]?.metadata}`
+        )
+      );
+      navigate("/graph");
+    }
+  };
 
   return (
     <div
@@ -198,7 +227,7 @@ const TokenSetup = () => {
         <Input.TextArea
           value={description}
           rows={4}
-          maxLength={6}
+          // maxLength={6}
           style={{
             fontSize: "1rem",
             padding: "12px 12px",
@@ -223,7 +252,7 @@ const TokenSetup = () => {
             opacity: 0.5,
             justifyContent: "space-between",
           }}
-          onClick={() => console.log("Submit the creation")}
+          onClick={async () => await setupForm()}
         >
           <div
             style={{ fontFamily: "books", fontSize: "16px", color: "white" }}

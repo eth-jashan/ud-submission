@@ -21,8 +21,12 @@ const authSlice = createSlice({
     authorization: null,
     github: null,
     claimed: true,
+    setupInfo: {},
   },
   reducers: {
+    set_setup(state, action) {
+      state.setupInfo = action.payload.setup;
+    },
     set_web3(state, action) {
       state.provider = action.payload.provider;
       state.web3Provider = action.payload.web3Provider;

@@ -237,3 +237,11 @@ export const setUnstoppableAuth = (address, authorization) => {
     );
   };
 };
+
+export const graphSetup = (name, description, metadata_hash) => {
+  return async (dispatch, getState) => {
+    dispatch(
+      authActions.set_setup({ setup: { name, description, metadata_hash } })
+    );
+  };
+};

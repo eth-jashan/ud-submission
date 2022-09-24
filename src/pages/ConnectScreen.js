@@ -72,7 +72,7 @@ const ConnectScreen = () => {
   // console.log(active, account);
   if (active) {
     console.log("account address", account, chainId, library.getSigner());
-    //create user here
+    navigate("/graph");
   }
 
   async function handleDisconnect() {

@@ -3,7 +3,7 @@ import {
   //  type LayoutEngineType // required to change the layoutEngineType, otherwise optional
 } from "react-digraph";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { MdAccountBalance } from "react-icons/md";
 import { GiFern } from "react-icons/gi";
 import { VscSymbolOperator } from "react-icons/vsc";
@@ -25,6 +25,8 @@ import ModalComponent from "../../components/Modal";
 import activityTokenAbi from "../../abi/damboTokens.json";
 import axios from "axios";
 import { useWeb3React } from "@web3-react/core";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 const sample = {
   edges: [],
   nodes: [],
@@ -47,7 +49,17 @@ const NODE_KEY = "id"; // Allows D3 to correctly update DOM
 
 export default function Graph() {
   // this is the initial value of the state
-  console.log(account, library);
+  const context = useWeb3React();
+  const {
+    // connector,
+    library,
+    chainId,
+    account,
+    activate,
+    deactivate,
+    active,
+    error,
+  } = context;
   const [nodes, setNodes] = useState(sample.nodes);
   const [edges, setEdges] = useState(sample.edges);
   const [targets, setTargets] = useState([]);
@@ -56,7 +68,16 @@ export default function Graph() {
   const [operators, setOperators] = useState([]);
 
   const [open, setOpen] = React.useState(false);
+  const setup = useSelector((x) => x.auth.setupInfo);
+  console.log(setup, setup === {});
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    if (!setup?.name) {
+      console.log("navigate");
+      navigate("/setup");
+    }
+  }, [setup]);
   const myRef = useRef("someval?");
 
   const [selected, setSelected] = useState(null);
@@ -129,12 +150,100 @@ export default function Graph() {
     return searchArray[0];
   };
 
-  const [treeCreated, setTreeCreated] = useState(true);
+  const [treeCreated, setTreeCreated] = useState(false);
+
+  const getHashedValue = (id, type) => {
+    const current = info.filter((x) => x.id === id);
+    const erc721Address = "0x4CC04A01D82135F16D8c35FE5e93c7f54679ABA0";
+    const erc20Address = "0xA1e024F995c00814b3F8c7FBb9Bb39775bCE4555";
+    const erc1155Address = "0x25508C8f6AB2990BB77B658635295387fb8637EB";
+    const lensFollowerAddress = "0x4e6F9A0F8a3366ff18DeE5Bef0323a0C6682EfeC";
+    const lensPubThreshold = "0x07e6982a5B54fB6363c26Ac1861F6ad5E91E216a";
+    const lensIsExist = "0x547AaDc7c8389318FE88084CA68B013b7f671b0F";
+
+    if (type === "poly") {
+      switch (current[0].adapterType) {
+        case "ERC 721":
+          return {
+            value: [
+              erc721Address.slice(2),
+              getElementOnId(id)?.contractAddress.slice(2),
+              getBytes4HexKeccack(getElementOnId(id)?.operatorType),
+              ethers.utils.defaultAbiCoder
+                .encode(["uint256"], [parseInt(getElementOnId(id)?.threshold)])
+                .slice(2),
+            ],
+            title: "ERC721BalanceThreshold",
+          };
+        case "ERC 20":
+          return {
+            value: [
+              erc20Address.slice(2),
+              getElementOnId(x.source)?.contractAddress.slice(2),
+              getBytes4HexKeccack(getElementOnId(id)?.operatorType),
+              ethers.utils.defaultAbiCoder
+                .encode(["uint256"], [parseInt(getElementOnId(id)?.threshold)])
+                .slice(2),
+            ],
+            title: "ERC20BalanceThreshold",
+          };
+        case "ERC 1155":
+          return {
+            value: [
+              erc1155Address.slice(2),
+              getElementOnId(id)?.contractAddress.slice(2),
+              ethers.utils.defaultAbiCoder
+                .encode(["uint256"], [parseInt(getElementOnId(id)?.tokenId)])
+                .slice(2),
+              getBytes4HexKeccack(getElementOnId(id)?.operatorType),
+              ethers.utils.defaultAbiCoder
+                .encode(["uint256"], [parseInt(getElementOnId(id)?.threshold)])
+                .slice(2),
+            ],
+            title: "ERC1155BalanceThreshold",
+          };
+        default:
+          return { value: [], title: "" };
+      }
+    } else {
+      switch (current[0].adapterType) {
+        case "LensFollowerThreshold":
+          return {
+            value: [
+              lensFollowerAddress.slice(2),
+              getBytes4HexKeccack(getElementOnId(id)?.operatorType),
+              ethers.utils.defaultAbiCoder
+                .encode(["uint256"], [parseInt(getElementOnId(id)?.threshold)])
+                .slice(2),
+            ],
+            title: "LensFollowerThreshold",
+          };
+        case "LensPubThreshold":
+          return {
+            value: [
+              lensPubThreshold.slice(2),
+              getBytes4HexKeccack(getElementOnId(id)?.operatorType),
+              ethers.utils.defaultAbiCoder
+                .encode(["uint256"], [parseInt(getElementOnId(id)?.threshold)])
+                .slice(2),
+            ],
+            title: "LensPubThreshold",
+          };
+        case "LensProfileExists":
+          return {
+            value: [lensIsExist.slice(2)],
+            title: "LensProfileExists",
+          };
+        default:
+          return { value: [], title: "" };
+      }
+    }
+  };
 
   const createTree = () => {
     let rootNodeId = getRootOfTree();
     let calculatedId = [];
-    const erc721Address = "0x4CC04A01D82135F16D8c35FE5e93c7f54679ABA0";
+
     let relationalArray = [];
     const leafIds = edges.filter(
       (x) => x.target === rootNodeId && operators.includes(x.target)
@@ -157,19 +266,9 @@ export default function Graph() {
         relationalArray[0].children.push(
           new TreeNode(
             x.source,
-            [
-              erc721Address.slice(2),
-              getElementOnId(x.source)?.contractAddress.slice(2),
-              getBytes4HexKeccack(getElementOnId(x.source)?.operatorType),
-              ethers.utils.defaultAbiCoder
-                .encode(
-                  ["uint256"],
-                  [parseInt(getElementOnId(x.source)?.threshold)]
-                )
-                .slice(2),
-            ],
+            getHashedValue(x?.source, x?.type).value,
             false,
-            "ERC721BalanceThreshold"
+            getHashedValue(x?.source, x?.type).title
           )
         );
       }
@@ -209,16 +308,9 @@ export default function Graph() {
             relationalArray[i + 1].children.push(
               new TreeNode(
                 x.source,
-                [
-                  erc721Address.slice(2),
-                  getElementOnId(x.source)?.contractAddress.slice(2),
-                  getBytes4HexKeccack(getElementOnId(x.source)?.operatorType),
-                  ethers.utils.defaultAbiCoder
-                    .encode(["uint256"], [getElementOnId(x?.source)?.threshold])
-                    .slice(2),
-                ],
+                getHashedValue(x?.source, x?.type).value,
                 false,
-                "ERC721BalanceThreshold"
+                getHashedValue(x?.source, x?.type).title
               )
             );
           }
@@ -226,7 +318,7 @@ export default function Graph() {
         });
       }
     });
-    console.log("relation", relationalArray);
+
     let rootNodes;
     relationalArray
       .slice()
@@ -243,7 +335,9 @@ export default function Graph() {
           const topTree = item.parent;
           topTree.set_left(item.children[0]);
           topTree.set_right(rootNodes);
-          setTree(topTree);
+          console.log("top tree", topTree);
+          rootNodes = topTree;
+          // setTree(topTree);
         } else {
           const newParent = item;
           newParent.children.forEach((x) => {
@@ -256,6 +350,8 @@ export default function Graph() {
           console.log("Final root", rootNodes);
         }
       });
+    console.log("top tree", rootNodes);
+    setTree(rootNode);
     setTreeCreated(true);
   };
 
@@ -283,7 +379,7 @@ export default function Graph() {
 
   function onCreateNode(nodeType) {
     const title = getTitle(nodeType);
-    const x = 0;
+    const x = 200;
     const y = 300;
     var type = nodeType;
     console.log(nodeType);
@@ -457,60 +553,46 @@ export default function Graph() {
   );
 
   const deployConditionTree = async () => {
-    // console.log("Root", tree.length);
-    const root = encodeConditions(tree);
-    console.log("tree", root);
-    try {
-      const res = await axios.post(
-        "https://is3otkef0k.execute-api.us-east-1.amazonaws.com/Prod/graph",
-        {
-          table: "rule",
-          name: "test_rule#2",
-          bytes:
-            "0x211efb2e4CC04A01D82135F16D8c35FE5e93c7f54679ABA0B20F972552633A1E8e9562Ce5Ad5Ec415D47909dfbdf50ae00000000000000000000000000000000000000000000000000000000000000004CC04A01D82135F16D8c35FE5e93c7f54679ABA0B20F972552633A1E8e9562Ce5Ad5Ec415D47909de22ffa0d000000000000000000000000000000000000000000000000000000000000000d",
-          graph: "test_graph",
-          metadata_uri: "hm7DsIqUIReq3OVZAsBfbD4Qr_dP3Eu1TgBVzP6Cuyw",
-          token_id: 0,
-          creator: "0x9C3f331473602e818E92CD16C948af4e924F81Eb",
-          description: "Shaurya ki wedding card ERC1155 mein",
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
+    console.log("Root", tree.length);
+    if (tree) {
+      const root = encodeConditions(tree);
+      console.log("tree", tree, root);
+
+      if (root) {
+        const ActivityToken = new ethers.Contract(
+          "0x3683ee78a8B718665Bb730e21954D31DAe90E901",
+          activityTokenAbi.abi,
+          library.getSigner()
+        );
+
+        const res = await (await ActivityToken.setup(1, root)).wait();
+        console.log("ress", res);
+        if (res) {
+          try {
+            const res = await axios.post(
+              "https://is3otkef0k.execute-api.us-east-1.amazonaws.com/Prod/graph",
+              {
+                table: "rule",
+                name: "test_rule#2",
+                bytes: root,
+                graph: "test_graph",
+                metadata_uri: "hm7DsIqUIReq3OVZAsBfbD4Qr_dP3Eu1TgBVzP6Cuyw",
+                token_id: 1,
+                creator: "0x565CBd65Cb3e65445AfD14169003A528C985e9C7",
+                description: "Shaurya ki wedding card ERC1155 mein",
+              },
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+            console.log(res.data);
+          } catch (error) {
+            console.log(error.toString());
+          }
         }
-      );
-      console.log(res.data);
-    } catch (error) {
-      console.log(error.toString());
-    }
-    if (root) {
-      // run activity token function !!!!
-      // const ethereum = window.ethereum;
-      // const accounts = await ethereum.request({
-      //   method: "eth_requestAccounts",
-      // });
-      // console.log("accounts!!!", accounts);
-      // const provider = new ethers.providers.Web3Provider(ethereum);
-      // const walletAddress = accounts[0]; // first account in MetaMask
-      // const signer = provider.getSigner(walletAddress);
-      // const USDTContract = new ethers.Contract(
-      //   "0x8b6aF8210816593B1be8a62B14Cf94E7D8DA5Aa2",
-      //   activityTokenAbi.abi,
-      //   signer
-      // );
-      // const res = await (
-      //   await USDTContract.setup(
-      //     1,
-      //     root,
-      //     "http://arweave.net/hm7DsIqUIReq3OVZAsBfbD4Qr_dP3Eu1TgBVzP6Cuyw"
-      //   )
-      // ).wait();
-      // const res = await USDTContract.checkValidity(
-      //   0,
-      //   "0x211efb2e4CC04A01D82135F16D8c35FE5e93c7f54679ABA0B20F972552633A1E8e9562Ce5Ad5Ec415D47909dfbdf50ae00000000000000000000000000000000000000000000000000000000000000004CC04A01D82135F16D8c35FE5e93c7f54679ABA0B20F972552633A1E8e9562Ce5Ad5Ec415D47909de22ffa0d000000000000000000000000000000000000000000000000000000000000000d"
-      // );
-      // console.log("ress", res);
+      }
     }
   };
 
@@ -692,6 +774,7 @@ export default function Graph() {
           }}
           onConfirm={(id, data) => addInfo(id, data)}
           selected={selected}
+          info={info}
         />
       )}
     </div>
