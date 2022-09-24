@@ -6,28 +6,28 @@ import connectors from "../utils/connector";
 import "./connectScreen.scss";
 import { assets } from "../constant/assets";
 import { useSelector, useDispatch } from "react-redux";
-import { setUnstoppableAuth } from "../store/actions/auth-action";
+// import { setUnstoppableAuth } from "../store/actions/auth-action";
 import { useNavigate } from "react-router";
-import { supabase } from "../utils/supabase";
-import axios from "axios";
-import { checkValid } from "../utils/contractCall";
-import { ethers } from "ethers";
+// import { supabase } from "../utils/supabase";
+// import axios from "axios";
+// import { checkValid } from "../utils/contractCall";
+// import { ethers } from "ethers";
 
 const ConnectScreen = () => {
-  const discordCode = useSelector((x) => x.auth.discordCode);
-  const accountAddress = useSelector((x) => x.auth.accountAddress);
-  const github = useSelector((x) => x.auth.github);
-  const authorization = useSelector((x) => x.auth.authorization);
+  // const discordCode = useSelector((x) => x.auth.discordCode);
+  // const accountAddress = useSelector((x) => x.auth.accountAddress);
+  // const github = useSelector((x) => x.auth.github);
+  // const authorization = useSelector((x) => x.auth.authorization);
   const navigate = useNavigate();
 
-  const dispatch = useDispatch();
-  const onDiscordAuth = () => {
-    if (!discordCode) {
-      window.location.replace(
-        `https://discord.com/api/oauth2/authorize?client_id=950635095465795615&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fdiscord%2Ffallback&response_type=code&scope=identify%20guilds%20guilds.members.read`
-      );
-    }
-  };
+  // const dispatch = useDispatch();
+  // const onDiscordAuth = () => {
+  //   if (!discordCode) {
+  //     window.location.replace(
+  //       `https://discord.com/api/oauth2/authorize?client_id=950635095465795615&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fdiscord%2Ffallback&response_type=code&scope=identify%20guilds%20guilds.members.read`
+  //     );
+  //   }
+  // };
 
   const context = useWeb3React();
   const {
@@ -40,9 +40,10 @@ const ConnectScreen = () => {
     active,
     error,
   } = context;
+  console.log("aksmdck", active, account);
 
   const onWalletConnect = (connectorId) => {
-    if (!accountAddress) {
+    if (!active) {
       return async () => {
         try {
           const connector = connectors[connectorId];
@@ -72,33 +73,34 @@ const ConnectScreen = () => {
   // console.log(active, account);
   if (active) {
     console.log("account address", account, chainId, library.getSigner());
-    navigate("/graph");
+    //create user here
+    navigate("/dashboard");
   }
 
-  async function handleDisconnect() {
-    try {
-      deactivate();
-    } catch (error) {
-      console.error(error);
-    }
-  }
+  // async function handleDisconnect() {
+  //   try {
+  //     deactivate();
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // }
 
-  async function signInWithGithub() {
-    await supabase.auth.signIn(
-      {
-        provider: "github",
-      },
-      {
-        redirectTo: "http://localhost:3000/twitter/fallback?",
-      }
-    );
-  }
+  // async function signInWithGithub() {
+  //   await supabase.auth.signIn(
+  //     {
+  //       provider: "github",
+  //     },
+  //     {
+  //       redirectTo: "http://localhost:3000/twitter/fallback?",
+  //     }
+  //   );
+  // }
 
-  useEffect(async () => {
-    if (discordCode && authorization && github) {
-      // navigate("/dashboard");
-    }
-  });
+  // useEffect(async () => {
+  //   if (discordCode && authorization && github) {
+  //     // navigate("/dashboard");
+  //   }
+  // });
 
   return (
     <div className="connect-socials-screen-container">
@@ -148,9 +150,9 @@ const ConnectScreen = () => {
                     color: "white",
                   }}
                 >
-                  {!accountAddress ? "Connect Wallet" : "Connected"}
+                  {!active ? "Connect Wallet" : "Connected"}
                 </div>
-                {!accountAddress && (
+                {!active && (
                   <img
                     alt=""
                     style={{ height: 24, width: 24 }}
