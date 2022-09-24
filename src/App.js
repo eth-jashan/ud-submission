@@ -4,12 +4,15 @@ import "./App.scss";
 import * as dayjs from "dayjs";
 import * as relativeTimePlugin from "dayjs/plugin/relativeTime";
 import { useDispatch } from "react-redux";
-import AppContext from "./appContext";
 import ConnectScreen from "./pages/ConnectScreen";
 import Graph from "./pages/Graph/Graph";
 import CommunityList from "./pages/CommunityList";
 import TokenSetup from "./pages/TokenSetup";
 import DashboardScreen from "./pages/Dashboard";
+
+import { Web3ReactProvider } from "@web3-react/core";
+import { Web3Provider } from "@ethersproject/providers";
+// import { Web3Provider } from "@ethersproject/providers";
 
 function App() {
   dayjs.extend(relativeTimePlugin);

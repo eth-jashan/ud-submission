@@ -1,3 +1,4 @@
+import { ethers } from "ethers";
 import activityTokenAbi from "../abi/damboTokens.json";
 
 export const createGraph = async (metaHash, root, tokenId) => {
@@ -15,10 +16,7 @@ export const createGraph = async (metaHash, root, tokenId) => {
   return res;
 };
 
-export const checkValid = async (tokenId, bytes) => {
-  const provider = new ethers.providers.Web3Provider(ethereum);
-  const walletAddress = accounts[0]; // first account in MetaMask
-  const signer = provider.getSigner(walletAddress);
+export const checkValid = async (tokenId, bytes, signer) => {
   const ActivityContract = new ethers.Contract(
     "0x8b6aF8210816593B1be8a62B14Cf94E7D8DA5Aa2",
     activityTokenAbi.abi,

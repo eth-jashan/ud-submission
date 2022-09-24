@@ -2,10 +2,42 @@ import React, { useState } from "react";
 import { Input } from "antd";
 import upload from "../../assets/Icons/upload.svg";
 import right_arrow from "../../assets/Icons/right_arrow_white.svg";
+import { message, Upload } from "antd";
+
+const { Dragger } = Upload;
 
 const TokenSetup = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [imageUrl, setImageUrl] = useState(false);
+  const [file, setFile] = useState(false);
+  const props = {
+    name: "file",
+    multiple: false,
+    action: false,
+
+    onChange(info) {
+      // const { status } = info.file;
+
+      // if (status !== "uploading") {
+      //   console.log(info.file, info.fileList);
+      // }
+
+      // if (status === "done") {
+      //   message.success(`${info.file.name} file uploaded successfully.`);
+      // } else if (status === "error") {
+      //   message.error(`${info.file.name} file upload failed.`);
+      // }
+      console.log("Uploaded Image", info.file);
+      console.log(info.file.originFileObj);
+      setImageUrl(URL.createObjectURL(info.file.originFileObj));
+    },
+    onDrop(e) {
+      console.log("Dropped files", e.dataTransfer.files);
+    },
+  };
+
+  new Blob([info.file.originFileObj], { type: "image/jpeg" });
 
   const renderHeader = () => (
     <div
@@ -100,7 +132,16 @@ const TokenSetup = () => {
             marginTop: "1.5rem",
           }}
         >
-          <img src={upload} style={{ width: "2rem", height: "2rem" }} />
+          {!imageUrl ? (
+            <Dragger {...props}>
+              <img src={upload} style={{ width: "2rem", height: "2rem" }} />
+            </Dragger>
+          ) : (
+            <img
+              src={imageUrl}
+              style={{ height: "100%", width: "100%", borderRadius: 12 }}
+            />
+          )}
         </div>
         <div
           style={{

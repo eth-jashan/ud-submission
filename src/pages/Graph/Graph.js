@@ -24,6 +24,7 @@ import { encodeConditions, getBytes4HexKeccack, TreeNode } from "../../encoder";
 import ModalComponent from "../../components/Modal";
 import activityTokenAbi from "../../abi/damboTokens.json";
 import axios from "axios";
+import { useWeb3React } from "@web3-react/core";
 const sample = {
   edges: [],
   nodes: [],
@@ -46,6 +47,7 @@ const NODE_KEY = "id"; // Allows D3 to correctly update DOM
 
 export default function Graph() {
   // this is the initial value of the state
+  console.log(account, library);
   const [nodes, setNodes] = useState(sample.nodes);
   const [edges, setEdges] = useState(sample.edges);
   const [targets, setTargets] = useState([]);
@@ -127,7 +129,7 @@ export default function Graph() {
     return searchArray[0];
   };
 
-  const [treeCreated, setTreeCreated] = useState(false);
+  const [treeCreated, setTreeCreated] = useState(true);
 
   const createTree = () => {
     let rootNodeId = getRootOfTree();
@@ -339,6 +341,7 @@ export default function Graph() {
     setOpen(false);
   };
   console.log("id to input mapping!", info, tree);
+
   function onSelectNode(viewNode, event) {
     if (viewNode) {
       console.log("on select node");
@@ -454,7 +457,7 @@ export default function Graph() {
   );
 
   const deployConditionTree = async () => {
-    console.log("Root", tree.length);
+    // console.log("Root", tree.length);
     const root = encodeConditions(tree);
     console.log("tree", root);
     try {
@@ -462,13 +465,19 @@ export default function Graph() {
         "https://is3otkef0k.execute-api.us-east-1.amazonaws.com/Prod/graph",
         {
           table: "rule",
-          name: "test_rule",
+          name: "test_rule#2",
           bytes:
             "0x211efb2e4CC04A01D82135F16D8c35FE5e93c7f54679ABA0B20F972552633A1E8e9562Ce5Ad5Ec415D47909dfbdf50ae00000000000000000000000000000000000000000000000000000000000000004CC04A01D82135F16D8c35FE5e93c7f54679ABA0B20F972552633A1E8e9562Ce5Ad5Ec415D47909de22ffa0d000000000000000000000000000000000000000000000000000000000000000d",
           graph: "test_graph",
-          meatadata_uri: "hm7DsIqUIReq3OVZAsBfbD4Qr_dP3Eu1TgBVzP6Cuyw",
+          metadata_uri: "hm7DsIqUIReq3OVZAsBfbD4Qr_dP3Eu1TgBVzP6Cuyw",
           token_id: 0,
-          creator: "0x565CBd65Cb3e65445AfD14169003A528C985e9C7",
+          creator: "0x9C3f331473602e818E92CD16C948af4e924F81Eb",
+          description: "Shaurya ki wedding card ERC1155 mein",
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
       );
       console.log(res.data);
@@ -477,31 +486,31 @@ export default function Graph() {
     }
     if (root) {
       // run activity token function !!!!
-      const ethereum = window.ethereum;
-      const accounts = await ethereum.request({
-        method: "eth_requestAccounts",
-      });
-      console.log("accounts!!!", accounts);
-      const provider = new ethers.providers.Web3Provider(ethereum);
-      const walletAddress = accounts[0]; // first account in MetaMask
-      const signer = provider.getSigner(walletAddress);
-      const USDTContract = new ethers.Contract(
-        "0x8b6aF8210816593B1be8a62B14Cf94E7D8DA5Aa2",
-        activityTokenAbi.abi,
-        signer
-      );
+      // const ethereum = window.ethereum;
+      // const accounts = await ethereum.request({
+      //   method: "eth_requestAccounts",
+      // });
+      // console.log("accounts!!!", accounts);
+      // const provider = new ethers.providers.Web3Provider(ethereum);
+      // const walletAddress = accounts[0]; // first account in MetaMask
+      // const signer = provider.getSigner(walletAddress);
+      // const USDTContract = new ethers.Contract(
+      //   "0x8b6aF8210816593B1be8a62B14Cf94E7D8DA5Aa2",
+      //   activityTokenAbi.abi,
+      //   signer
+      // );
       // const res = await (
       //   await USDTContract.setup(
-      //     0,
+      //     1,
       //     root,
-      //     "hm7DsIqUIReq3OVZAsBfbD4Qr_dP3Eu1TgBVzP6Cuyw"
+      //     "http://arweave.net/hm7DsIqUIReq3OVZAsBfbD4Qr_dP3Eu1TgBVzP6Cuyw"
       //   )
       // ).wait();
       // const res = await USDTContract.checkValidity(
       //   0,
       //   "0x211efb2e4CC04A01D82135F16D8c35FE5e93c7f54679ABA0B20F972552633A1E8e9562Ce5Ad5Ec415D47909dfbdf50ae00000000000000000000000000000000000000000000000000000000000000004CC04A01D82135F16D8c35FE5e93c7f54679ABA0B20F972552633A1E8e9562Ce5Ad5Ec415D47909de22ffa0d000000000000000000000000000000000000000000000000000000000000000d"
       // );
-      console.log("ress", res);
+      // console.log("ress", res);
     }
   };
 

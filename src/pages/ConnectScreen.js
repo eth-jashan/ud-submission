@@ -10,6 +10,8 @@ import { setUnstoppableAuth } from "../store/actions/auth-action";
 import { useNavigate } from "react-router";
 import { supabase } from "../utils/supabase";
 import axios from "axios";
+import { checkValid } from "../utils/contractCall";
+import { ethers } from "ethers";
 
 const ConnectScreen = () => {
   const discordCode = useSelector((x) => x.auth.discordCode);
@@ -27,7 +29,17 @@ const ConnectScreen = () => {
     }
   };
 
-  const { active, account, activate, deactivate } = useWeb3React();
+  const context = useWeb3React();
+  const {
+    // connector,
+    library,
+    chainId,
+    account,
+    activate,
+    deactivate,
+    active,
+    error,
+  } = context;
 
   const onWalletConnect = (connectorId) => {
     if (!accountAddress) {
@@ -43,22 +55,26 @@ const ConnectScreen = () => {
             connector.walletConnectProvider = undefined;
           }
           await activate(connector);
+
+          // // provider = new ethers.providers.Web3Provider(provider);
+          // const signer = provider.getSigner();
+          // await checkValid(
+          //   0,
+          //   "0x211efb2e4CC04A01D82135F16D8c35FE5e93c7f54679ABA0B20F972552633A1E8e9562Ce5Ad5Ec415D47909dfbdf50ae00000000000000000000000000000000000000000000000000000000000000004CC04A01D82135F16D8c35FE5e93c7f54679ABA0B20F972552633A1E8e9562Ce5Ad5Ec415D47909de22ffa0d000000000000000000000000000000000000000000000000000000000000000d",
+          //   signer
+          // );
         } catch (error) {
           console.error(error);
         }
       };
     }
   };
-  if (active && !authorization) {
-    const username = JSON.parse(localStorage.getItem("username"));
-    const authorization = JSON.parse(
-      localStorage.getItem(
-        `authorization?clientID=316afdd4-8b6f-4e6c-8891-c1d22ce96112&scope=openid+wallet&username=${username.value}`
-      )
-    );
-    dispatch(setUnstoppableAuth(account, authorization));
-    console.log(authorization);
+  // console.log(active, account);
+  if (active) {
+    console.log("account address", account, chainId, library.getSigner());
+    //create user here
   }
+
   async function handleDisconnect() {
     try {
       deactivate();
