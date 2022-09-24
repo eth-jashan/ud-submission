@@ -25,13 +25,13 @@
     }
   }
   .community-list-wrapper {
-    display: flex;
-    justify-content: space-evenly;
-    flex-wrap: wrap;
-    padding: 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 1rem;
+    padding: 2rem 0;
     .community-list-card {
-      width: 31%;
-      margin: 1rem;
+      width: 100%;
+      // margin: 1rem 0;
       border: 1px solid #ccc;
       border-radius: 12px;
       overflow: hidden;
@@ -57,15 +57,16 @@
         .community-list-card-button {
           display: flex;
           align-items: center;
-          color: rgb(99, 102, 241);
+          color: #fff;
           margin-top: 1rem;
+          background-color: rgb(99, 102, 241);
+          padding: 0.5rem 1rem;
+          width: fit-content;
+          border-radius: 0.25rem;
           img {
             margin-right: 0.25rem;
           }
           &:hover {
-            // color: #fff;
-            // background-color: rgb(99, 102, 241);
-            // padding: 1rem 1.5rem;
             cursor: pointer;
           }
         }

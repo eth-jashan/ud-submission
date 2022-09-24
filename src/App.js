@@ -6,7 +6,6 @@ import * as relativeTimePlugin from "dayjs/plugin/relativeTime";
 import { useDispatch } from "react-redux";
 import ConnectScreen from "./pages/ConnectScreen";
 import Graph from "./pages/Graph/Graph";
-import CommunityList from "./pages/CommunityList";
 import TokenSetup from "./pages/TokenSetup";
 import DashboardScreen from "./pages/Dashboard";
 
@@ -23,7 +22,6 @@ function App() {
       <div className="App-header">
         <Routes>
           <Route path="/" element={<ConnectScreen />} />
-          <Route path="/list" element={<CommunityList />} />
           <Route path="/graph" element={<Graph />} />
           <Route path="/setup" element={<TokenSetup />} />
           <Route path="/dashboard" element={<DashboardScreen />} />

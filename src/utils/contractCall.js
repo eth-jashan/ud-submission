@@ -6,7 +6,7 @@ export const createGraph = async (metaHash, root, tokenId) => {
   const walletAddress = accounts[0]; // first account in MetaMask
   const signer = provider.getSigner(walletAddress);
   const ActivityContract = new ethers.Contract(
-    "0x8b6aF8210816593B1be8a62B14Cf94E7D8DA5Aa2",
+    "0x57716a1A50473b7391e9CbadcACefB848b54b145",
     activityTokenAbi.abi,
     signer
   );
@@ -17,8 +17,9 @@ export const createGraph = async (metaHash, root, tokenId) => {
 };
 
 export const checkValid = async (tokenId, bytes, signer) => {
+  console.log("asdads", tokenId, bytes, signer);
   const ActivityContract = new ethers.Contract(
-    "0x8b6aF8210816593B1be8a62B14Cf94E7D8DA5Aa2",
+    "0x57716a1A50473b7391e9CbadcACefB848b54b145",
     activityTokenAbi.abi,
     signer
   );
@@ -32,7 +33,7 @@ export const claimNFT = async (tokenId, bytes) => {
   const walletAddress = accounts[0]; // first account in MetaMask
   const signer = provider.getSigner(walletAddress);
   const ActivityContract = new ethers.Contract(
-    "0x8b6aF8210816593B1be8a62B14Cf94E7D8DA5Aa2",
+    "0x57716a1A50473b7391e9CbadcACefB848b54b145",
     activityTokenAbi.abi,
     signer
   );

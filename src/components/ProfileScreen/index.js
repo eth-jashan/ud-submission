@@ -1,21 +1,8 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-// import damboBadge from "../assets/dambo-membership.svg";
-// import { assets } from "../constant/assets";
-// import ClaimedNFT from "./ClaimedNFT";
 import "./style.scss";
-import Lottie from "react-lottie";
-import loaderSquishy from "../../assets/lottie/loader-quishy.json";
-
-const defaultOptions = {
-  loop: true,
-  autoplay: true,
-  animationData: loaderSquishy,
-  rendererSettings: {
-    preserveAspectRatio: "xMidYMid slice",
-  },
-};
+import Loader from "../Loader";
 
 const ProfileScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -39,6 +26,7 @@ const ProfileScreen = () => {
   const accountAddress = useSelector((x) => x.auth.accountAddress);
 
   const [tokens, setTokens] = useState([]);
+  const [allNfts, setAllNfts] = useState([]);
 
   const fetchAllNft = async (address) => {
     try {
@@ -53,8 +41,8 @@ const ProfileScreen = () => {
         const data = chainInfo?.data?.data;
         const nft = data?.items.filter((x) => x.native_token !== true);
         const mergedArray = [];
-        nft.forEach((x, i) => {
-          x?.nft_data.forEach((item, index) => {
+        nft?.forEach((x, i) => {
+          x?.nft_data?.forEach((item, index) => {
             console.log("item is", item);
             const startingLetters = item?.external_data?.image?.slice(0, 4);
             if (startingLetters === "http" || startingLetters === "data") {
@@ -69,6 +57,12 @@ const ProfileScreen = () => {
       });
       setTokens(tokensMapped);
       console.log("nft", tokensMapped);
+      const allNfts = tokensMapped.reduce((acc, curr) => {
+        acc.push(...curr?.items);
+        return acc;
+      }, []);
+      console.log("allNfts", allNfts);
+      setAllNfts(allNfts);
     } catch (err) {
       console.error("err", err);
       return {
@@ -296,56 +290,25 @@ const ProfileScreen = () => {
   //     </div>
   //   );
   return (
-    <div className="scrollDiv">
+    <div className="scrollDiv profile-container">
       {/* {mintMembershipBadge()} */}
       {/* {<ClaimedNFT meta={meta} />} */}
       {/* {renderSnackBar()} */}
       {isLoading ? (
         <div className="home-screen-lottie-wrapper">
-          <Lottie
-            options={defaultOptions}
-            style={{ height: "150px", width: "150px" }}
-          />
+          <Loader />
         </div>
       ) : (
         <>
-          <div style={{ display: "flex", flexDirection: "row" }}>
-            {chains.map((x, i) => (
-              <div
-                onClick={() => setActiveChain(i)}
-                style={{
-                  padding: "8px 12px",
-                  borderRadius: 20,
-                  background: i === activeChain ? "#734BFF" : "white",
-                  border: i !== activeChain && "1px solid #734BFF",
-                  marginLeft: i !== 0 && "12px",
-                  marginTop: "12px",
-                  cursor: "pointer",
-                }}
-                key={i}
-              >
-                <div
-                  style={{
-                    fontFamily: "books",
-                    fontSize: "1rem",
-                    color: i !== activeChain ? "#734BFF" : "white",
-                  }}
-                >
-                  {x.name}
-                </div>
-              </div>
-            ))}
-          </div>
           <div
             style={{
-              display: "flex",
-              flexDirection: "row",
-              flexWrap: "wrap",
-              justifyContent: "space-between",
+              display: "grid",
               marginTop: "1rem",
+              gridTemplateColumns: "1fr 1fr 1fr",
+              gridGap: "1rem",
             }}
           >
-            {tokens[activeChain]?.items.map((x, i) =>
+            {allNfts.map((x, i) =>
               route === "nft" ? (
                 <div className="profile-list" key={i}>
                   <img src={x?.external_data?.image} />

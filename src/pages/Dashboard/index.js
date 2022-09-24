@@ -20,10 +20,33 @@ import DashboardHeader from "../../components/DashboardHeader";
 import HomeScreen from "../../components/HomeScreen";
 import CommunityList from "../../components/CommunityList";
 import ProfileScreen from "../../components/ProfileScreen";
+import { useWeb3React } from "@web3-react/core";
+import { useNavigate } from "react-router";
 
 const DashboardScreen = () => {
   const [route, setRoute] = useState("home");
   const COVALENT_KEY = "ckey_5517541ba1564651939c1cf161d";
+  const navigate = useNavigate();
+
+  const context = useWeb3React();
+  const {
+    // connector,
+    library,
+    chainId,
+    account,
+    activate,
+    deactivate,
+    active,
+    error,
+  } = context;
+
+  console.log("sadsdza", active, account);
+
+  if (!active) {
+    console.log("in not active");
+    navigate("/");
+  }
+
   // const [route, setRoute] = useState("home");
   //   const [showInput, setShowInput] = useState(false);
   //   const [inputText, setInputText] = useState("");
