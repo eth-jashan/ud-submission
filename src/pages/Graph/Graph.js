@@ -73,12 +73,12 @@ export default function Graph() {
   console.log(setup, setup === {});
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   if (!setup?.name) {
-  //     console.log("navigate");
-  //     navigate("/setup");
-  //   }
-  // }, [setup]);
+  useEffect(() => {
+    if (!setup?.name) {
+      console.log("navigate");
+      navigate("/setup");
+    }
+  }, [setup]);
   const myRef = useRef("someval?");
 
   const [selected, setSelected] = useState(null);

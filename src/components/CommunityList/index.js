@@ -30,17 +30,6 @@ const CommunityList = () => {
         const res = await axios.get(
           `https://is3otkef0k.execute-api.us-east-1.amazonaws.com/Prod/auxiliary?endpoint=${graph?.metadata_uri}`
         );
-        // const res = await axios.post(
-        //   `https://test-staging.api.drepute.xyz/dao_tool_server/eth/collectible`,
-        //   {
-        //     endpoint: graph?.metadata_uri,
-        //   },
-        //   {
-        //     headers: {
-        //       Authorization: `Bearer yJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY2NDExMzYxNCwianRpIjoiZmM5MGY0NTUtNWI3NC00NDExLTllOTYtZDhiNmNjZjZlZWRlIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6MTY4LCJuYmYiOjE2NjQxMTM2MTQsImV4cCI6MTY2NDcxODQxNH0.2fwcFRoozm2tZUdT0-OT3Nf52BNsGensS-mpo5njTuU`,
-        //     },
-        //   }
-        // );
         console.log("res in catxch", res?.data);
         imgUrl = res?.data?.image;
       }

@@ -36,9 +36,20 @@ export default function MyGraphs() {
 
     console.log("transfer single events", transferSingleEvents);
     const graphsWithMetadata = myGraphs?.map(async (graph) => {
-      const res = await axios.get(
-        `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${graph.token_id}/?&key=ckey_aae0c3dccd2942ecb297c61ff36`
-      );
+      let imgUrl;
+      try {
+        const res = await axios.get(
+          `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${graph.token_id}/?&key=ckey_aae0c3dccd2942ecb297c61ff36`
+        );
+        imgUrl =
+          res?.data?.data?.items?.[0]?.nft_data?.[0]?.external_data?.image;
+      } catch (err) {
+        const res = await axios.get(
+          `https://is3otkef0k.execute-api.us-east-1.amazonaws.com/Prod/auxiliary?endpoint=${graph?.metadata_uri}`
+        );
+        console.log("res in catxch", res?.data);
+        imgUrl = res?.data?.image;
+      }
       const totalClaimed = transferSingleEvents.filter((event) => {
         return (
           event.decoded.params.find((param) => param.name === "_id")?.value ==
@@ -47,8 +58,7 @@ export default function MyGraphs() {
       });
       return {
         ...graph,
-        imgUrl:
-          res?.data?.data?.items?.[0]?.nft_data?.[0]?.external_data?.image,
+        imgUrl,
         totalClaimed,
       };
     });
