@@ -18,14 +18,18 @@ const CommunityList = () => {
     );
     console.log("res is", res.data);
     const graphsWithMetadata = res.data?.map(async (graph) => {
-      let res;
+      let imgUrl;
       try {
-        res = await axios.get(
+        const res = await axios.get(
           `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${graph.token_id}/?&key=ckey_aae0c3dccd2942ecb297c61ff36`
         );
         console.log("asdjkclnac", res.data);
+        imgUrl =
+          res?.data?.data?.items?.[0]?.nft_data?.[0]?.external_data?.image;
       } catch (err) {
-        // res = await axios.get()
+        const res = await axios.get(
+          `https://is3otkef0k.execute-api.us-east-1.amazonaws.com/Prod/auxiliary?endpoint=${graph?.metadata_uri}`
+        );
         // const res = await axios.post(
         //   `https://test-staging.api.drepute.xyz/dao_tool_server/eth/collectible`,
         //   {
@@ -37,12 +41,12 @@ const CommunityList = () => {
         //     },
         //   }
         // );
-        // console.log("res in catxch", res?.data);
+        console.log("res in catxch", res?.data);
+        imgUrl = res?.data?.image;
       }
       return {
         ...graph,
-        imgUrl:
-          res?.data?.data?.items?.[0]?.nft_data?.[0]?.external_data?.image,
+        imgUrl,
       };
     });
     console.log("graphs with metadata", graphsWithMetadata);
