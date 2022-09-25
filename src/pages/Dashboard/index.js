@@ -24,6 +24,7 @@ import { useWeb3React } from "@web3-react/core";
 import { useNavigate } from "react-router";
 import MyGraphs from "../../components/MyGraphsScreen";
 
+import { Client } from "@xmtp/xmtp-js";
 const DashboardScreen = () => {
   const [route, setRoute] = useState("home");
   const COVALENT_KEY = "ckey_5517541ba1564651939c1cf161d";
@@ -42,11 +43,15 @@ const DashboardScreen = () => {
   } = context;
 
   console.log("sadsdza", active, account);
+  const [client, setClient] = useState();
 
-  useEffect(() => {
+  useEffect(async () => {
     if (!active || !library?.getSigner()) {
       console.log("in not active");
       navigate("/");
+    } else {
+      const xmtp = await Client.create(library.getSigner());
+      setClient(xmtp);
     }
   }, []);
 
@@ -133,13 +138,13 @@ const DashboardScreen = () => {
         {renderSnackBar()}
         <div className="scrollDiv">
           {route === "home" ? (
-            <HomeScreen />
+            <HomeScreen client={client} />
           ) : route === "list" ? (
             <CommunityList />
           ) : route === "profile" ? (
             <ProfileScreen />
           ) : (
-            <MyGraphs />
+            <MyGraphs client={client} />
           )}
         </div>
       </div>

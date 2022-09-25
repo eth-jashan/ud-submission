@@ -20,7 +20,7 @@ export const createGraph = async (metaHash, root, tokenId) => {
   return res;
 };
 
-export const checkValid = async (tokenId, bytes, signer) => {
+export const checkValid = async (tokenId, bytes, signer, index = 10) => {
   console.log(
     "check valid",
     tokenId,
@@ -35,8 +35,8 @@ export const checkValid = async (tokenId, bytes, signer) => {
     activityTokenAbi.abi,
     signer
   );
-  const res = await ActivityContract.checkValidity(tokenId, bytes);
-  console.log("res of check valid", res);
+  const res = await ActivityContract.checkValidity(index, bytes);
+  console.log("res of check valid", res, index);
 
   return res;
 };

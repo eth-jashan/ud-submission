@@ -18,15 +18,22 @@ const CommunityList = () => {
     );
     console.log("res is", res.data);
     const graphsWithMetadata = res.data?.map(async (graph) => {
-      const res = await axios.get(
-        `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${graph.token_id}/?&key=ckey_aae0c3dccd2942ecb297c61ff36`
-      );
-      console.log("asdjkclnac", res.data);
-      return {
-        ...graph,
-        imgUrl:
-          res?.data?.data?.items?.[0]?.nft_data?.[0]?.external_data?.image,
-      };
+      try {
+        const res = await axios.get(
+          `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${graph.token_id}/?&key=ckey_aae0c3dccd2942ecb297c61ff36`
+        );
+        console.log("asdjkclnac", res.data);
+        return {
+          ...graph,
+          imgUrl:
+            res?.data?.data?.items?.[0]?.nft_data?.[0]?.external_data?.image,
+        };
+      } catch (error) {
+        return {
+          ...graph,
+          imgUrl: "http://arweave.net/advfkadnvknvwkrnrvipr3v",
+        };
+      }
     });
     console.log("graphs with metadata", graphsWithMetadata);
     const graphsWithMetadataFulfilled = await Promise.all(graphsWithMetadata);

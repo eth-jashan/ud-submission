@@ -69,35 +69,10 @@ const ConnectScreen = () => {
     if (active) {
       console.log("account address", account, chainId, library.getSigner());
       dispatch(setUnstoppableAuth(account, chainId));
-      // setXtmpClient(xmtp);
+      navigate("/dashboard");
     }
   }),
     [active];
-
-  // async function handleDisconnect() {
-  //   try {
-  //     deactivate();
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // }
-
-  // async function signInWithGithub() {
-  //   await supabase.auth.signIn(
-  //     {
-  //       provider: "github",
-  //     },
-  //     {
-  //       redirectTo: "http://localhost:3000/twitter/fallback?",
-  //     }
-  //   );
-  // }
-
-  // useEffect(async () => {
-  //   if (discordCode && authorization && github) {
-  //     // navigate("/dashboard");
-  //   }
-  // });
 
   return (
     <div className="connect-socials-screen-container">
