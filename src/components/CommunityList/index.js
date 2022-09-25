@@ -18,10 +18,27 @@ const CommunityList = () => {
     );
     console.log("res is", res.data);
     const graphsWithMetadata = res.data?.map(async (graph) => {
-      const res = await axios.get(
-        `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${graph.token_id}/?&key=ckey_aae0c3dccd2942ecb297c61ff36`
-      );
-      console.log("asdjkclnac", res.data);
+      let res;
+      try {
+        res = await axios.get(
+          `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${graph.token_id}/?&key=ckey_aae0c3dccd2942ecb297c61ff36`
+        );
+        console.log("asdjkclnac", res.data);
+      } catch (err) {
+        // res = await axios.get()
+        const res = await axios.post(
+          `https://test-staging.api.drepute.xyz/dao_tool_server/eth/collectible`,
+          {
+            endpoint: graph?.metadata_uri,
+          },
+          {
+            headers: {
+              Authorization: `Bearer yJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY2NDExMzYxNCwianRpIjoiZmM5MGY0NTUtNWI3NC00NDExLTllOTYtZDhiNmNjZjZlZWRlIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6MTY4LCJuYmYiOjE2NjQxMTM2MTQsImV4cCI6MTY2NDcxODQxNH0.2fwcFRoozm2tZUdT0-OT3Nf52BNsGensS-mpo5njTuU`,
+            },
+          }
+        );
+        console.log("res in catxch", res?.data);
+      }
       return {
         ...graph,
         imgUrl:

@@ -9,26 +9,12 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { Client } from "@xmtp/xmtp-js";
 import { setUnstoppableAuth } from "../store/actions/auth-action";
-// import { supabase } from "../utils/supabase";
-// import axios from "axios";
-// import { checkValid } from "../utils/contractCall";
-// import { ethers } from "ethers";
+import axios from "axios";
 
 const ConnectScreen = () => {
-  // const discordCode = useSelector((x) => x.auth.discordCode);
-  // const accountAddress = useSelector((x) => x.auth.accountAddress);
-  // const github = useSelector((x) => x.auth.github);
-  // const authorization = useSelector((x) => x.auth.authorization);
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
-  // const onDiscordAuth = () => {
-  //   if (!discordCode) {
-  //     window.location.replace(
-  //       `https://discord.com/api/oauth2/authorize?client_id=950635095465795615&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fdiscord%2Ffallback&response_type=code&scope=identify%20guilds%20guilds.members.read`
-  //     );
-  //   }
-  // };
 
   const context = useWeb3React();
   const {
@@ -43,12 +29,13 @@ const ConnectScreen = () => {
   } = context;
   console.log("aksmdck", active, account);
   const [xtmpClient, setXtmpClient] = useState(false);
+  const [finalConnectors, setFinalConnectors] = useState({});
 
   const onWalletConnect = (connectorId) => {
     if (!active) {
       return async () => {
         try {
-          const connector = connectors[connectorId];
+          const connector = finalConnectors[connectorId];
 
           // Taken from https://github.com/NoahZinsmeister/web3-react/issues/124#issuecomment-817631654
           if (
@@ -69,6 +56,7 @@ const ConnectScreen = () => {
     if (active) {
       console.log("account address", account, chainId, library.getSigner());
       dispatch(setUnstoppableAuth(account, chainId));
+      navigate("/dashboard");
       // setXtmpClient(xmtp);
     }
   }),
@@ -99,6 +87,28 @@ const ConnectScreen = () => {
   //   }
   // });
 
+  console.log("connectors are", finalConnectors);
+
+  useEffect(async () => {
+    // setIsLoading(true);
+    const res = await axios.get(
+      "https://is3otkef0k.execute-api.us-east-1.amazonaws.com/Prod/auxiliary?id=test"
+    );
+    console.log("res.data.data", process.env.NODE_ENV, res.data);
+
+    // if (process.env.NODE_ENV !== "development") {
+    // setRedirectUri(res?.data?.uri);
+    const connector = connectors(
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:3000"
+        : res?.data?.uri
+    );
+    // console.log("connector is", connector);
+    setFinalConnectors(connector);
+    // }
+    // setIsLoading(false);
+  }, []);
+
   return (
     <div className="connect-socials-screen-container">
       <div className="socials-screen-left">
@@ -125,7 +135,7 @@ const ConnectScreen = () => {
               flexDirection: "column",
             }}
           >
-            {Object.keys(connectors).map((v, i) => (
+            {Object.keys(finalConnectors).map((v, i) => (
               <div
                 key={i}
                 style={{

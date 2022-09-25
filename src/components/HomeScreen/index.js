@@ -20,6 +20,7 @@ export default function HomeScreen() {
   const [claimableCommunityLists, setClaimableCommunityLists] = useState([]);
   const [claimLoading, setClaimLoading] = useState(false);
   const [claimLoadingUuid, setClaimLoadingUuid] = useState(-1);
+  const [claimedTokens, setClaimedTokens] = useState([]);
 
   const context = useWeb3React();
   const {
@@ -72,9 +73,13 @@ export default function HomeScreen() {
       );
       let res;
       if (!noOfTokens) {
-        res = await axios.get(
-          `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${graph.token_id}/?&key=ckey_aae0c3dccd2942ecb297c61ff36`
-        );
+        try {
+          res = await axios.get(
+            `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${graph.token_id}/?&key=ckey_aae0c3dccd2942ecb297c61ff36`
+          );
+        } catch (err) {
+          // fetch from backend
+        }
       }
 
       console.log("noOftokens", noOfTokens);
@@ -114,9 +119,26 @@ export default function HomeScreen() {
     }
   };
 
+  const fetchClaimedTokens = async () => {
+    const allTokens = await axios.get(
+      `https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/?quote-currency=USD&format=JSON&nft=true&no-nft-fetch=false&key=${COVALENT_KEY}`
+    );
+
+    console.log("all tokens are", allTokens);
+
+    const claimedTokens = allTokens?.data?.data?.items?.filter(
+      (token) =>
+        token?.contract_address.toLowerCase() === contractAddress.toLowerCase()
+    );
+
+    console.log("claim", claimedTokens);
+    setClaimedTokens(claimedTokens);
+  };
+
   useEffect(() => {
     if (active) {
       fetchClaimable();
+      fetchClaimedTokens();
     }
   }, []);
 
@@ -161,6 +183,23 @@ export default function HomeScreen() {
           ) : (
             <div className="nothing-left-to-claim">Nothing more to claim</div>
           )}
+
+          <div className="claimed-tokens-wrapper">
+            {claimedTokens?.length ? (
+              <>
+                <div className="claimed-tokens-title">Claimed tokens</div>
+                <div className="claimed-tokens-grid-wrapper">
+                  {claimedTokens?.[0]?.nft_data?.map((ele, index) => (
+                    <div key={index}>
+                      <img src={ele?.external_data?.image} />
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <></>
+            )}
+          </div>
         </div>
       )}
     </div>

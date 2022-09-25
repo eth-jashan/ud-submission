@@ -9,10 +9,10 @@ import { Web3ReactProvider } from "@web3-react/core";
 import store, { persistor } from "./store/index";
 import { PersistGate } from "redux-persist/integration/react";
 
-if (process.env.NODE_ENV === "production") {
-  console.log = () => {};
-  console.debug = () => {};
-}
+// if (process.env.NODE_ENV === "production") {
+//   console.log = () => {};
+//   console.debug = () => {};
+// }
 
 function getLibrary(provider) {
   const library = new Web3Provider(provider);
