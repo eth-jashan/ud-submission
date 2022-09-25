@@ -79,18 +79,12 @@ const TokenSetup = () => {
     formData.append("name", name);
     formData.append("description", description);
     const res = await axios.post(
-      `http://localhost:3001/arweave_server/membership`,
+      `http://localhost:3001/web3_storage/image`,
       formData
     );
     console.log("response", res);
-    if (res.data.data[0].metadata) {
-      dispatch(
-        graphSetup(
-          name,
-          description,
-          `http://arweave.net/${res.data.data[0]?.metadata}`
-        )
-      );
+    if (res.data.metadata_uri) {
+      dispatch(graphSetup(name, description, res.data.metadata_uri));
       navigate("/graph");
     }
   };
@@ -248,7 +242,6 @@ const TokenSetup = () => {
             display: "flex",
             alignSelf: "center",
             marginTop: 22,
-            opacity: 0.5,
             justifyContent: "space-between",
           }}
           onClick={async () => await setupForm()}

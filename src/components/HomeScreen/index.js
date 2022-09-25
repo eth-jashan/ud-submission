@@ -155,7 +155,7 @@ export default function HomeScreen({ client }) {
     setClaimedTokens(claimedTokens);
   };
 
-  useEffect(() => {
+  useEffect(async () => {
     if (active) {
       // const xmtp = await Client.create(library.getSigner());
       // setXmtpClient(xmtp);
