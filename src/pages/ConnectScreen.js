@@ -1,17 +1,13 @@
 import { Row, Col, Typography, message } from "antd";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useWeb3React } from "@web3-react/core";
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 import connectors from "../utils/connector";
 import "./connectScreen.scss";
 import { assets } from "../constant/assets";
 import { useSelector, useDispatch } from "react-redux";
-// import { setUnstoppableAuth } from "../store/actions/auth-action";
 import { useNavigate } from "react-router";
-// import { supabase } from "../utils/supabase";
-// import axios from "axios";
-// import { checkValid } from "../utils/contractCall";
-// import { ethers } from "ethers";
+import { Client } from "@xmtp/xmtp-js";
 
 const ConnectScreen = () => {
   // const discordCode = useSelector((x) => x.auth.discordCode);
@@ -41,6 +37,7 @@ const ConnectScreen = () => {
     error,
   } = context;
   console.log("aksmdck", active, account);
+  const [xtmpClient, setXtmpClient] = useState(false);
 
   const onWalletConnect = (connectorId) => {
     if (!active) {
@@ -71,11 +68,14 @@ const ConnectScreen = () => {
     }
   };
   // console.log(active, account);
-  if (active) {
-    console.log("account address", account, chainId, library.getSigner());
-    //create user here
-    navigate("/dashboard");
-  }
+  useEffect(async () => {
+    if (active) {
+      console.log("account address", account, chainId, library.getSigner());
+      const xmtp = await Client.create(library.getSigner());
+      setXtmpClient(xmtp);
+    }
+  }),
+    [active];
 
   // async function handleDisconnect() {
   //   try {
@@ -162,38 +162,46 @@ const ConnectScreen = () => {
               </div>
             ))}
           </div>
-          {/* <div
-            style={{
-              width: "100%",
-              marginTop: 20,
-              padding: "1rem 1.5rem",
-              background: "#5665F3",
-              display: "flex",
-              justifyContent: "space-between",
-              borderRadius: 32,
-              fontSize: 16,
-              alignItems: "center",
-            }}
-            onClick={() => onDiscordAuth()}
-          >
+          {xtmpClient && (
             <div
               style={{
-                fontFamily: "books",
-                color: "white",
+                width: "100%",
+                marginTop: 20,
+                padding: "1rem 1.5rem",
+                background: "#5665F3",
+                display: "flex",
+                justifyContent: "space-between",
+                borderRadius: 32,
+                fontSize: 16,
+                alignItems: "center",
+              }}
+              onClick={async () => {
+                const conversation =
+                  await xtmpClient.conversations.newConversation(
+                    "0x3F11b27F323b62B159D2642964fa27C46C841897"
+                  );
+                console.log(conversation);
               }}
             >
-              {discordCode ? "Connected" : "Connect Discord"}
+              <div
+                style={{
+                  fontFamily: "books",
+                  color: "white",
+                }}
+              >
+                {"Connect Discord"}
+              </div>
+              {
+                <img
+                  alt=""
+                  style={{ height: 24, width: 24 }}
+                  src={assets.icons.chevronRightWhite}
+                />
+              }
             </div>
-            {!discordCode && (
-              <img
-                alt=""
-                style={{ height: 24, width: 24 }}
-                src={assets.icons.chevronRightWhite}
-              />
-            )}
-          </div>
+          )}
 
-          <div
+          {/* <div
             style={{
               width: "100%",
               marginTop: 20,

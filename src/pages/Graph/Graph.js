@@ -72,12 +72,12 @@ export default function Graph() {
   console.log(setup, setup === {});
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!setup?.name) {
-      console.log("navigate");
-      navigate("/setup");
-    }
-  }, [setup]);
+  // useEffect(() => {
+  //   if (!setup?.name) {
+  //     console.log("navigate");
+  //     navigate("/setup");
+  //   }
+  // }, [setup]);
   const myRef = useRef("someval?");
 
   const [selected, setSelected] = useState(null);
@@ -160,8 +160,10 @@ export default function Graph() {
     const lensFollowerAddress = "0x4e6F9A0F8a3366ff18DeE5Bef0323a0C6682EfeC";
     const lensPubThreshold = "0x07e6982a5B54fB6363c26Ac1861F6ad5E91E216a";
     const lensIsExist = "0x547AaDc7c8389318FE88084CA68B013b7f671b0F";
-
-    if (type === "poly") {
+    console.log(type, "type of ada");
+    const currentLeaf = nodes.filter((x) => x.id === id);
+    console.log(currentLeaf[0]);
+    if (currentLeaf[0]?.type === "poly") {
       switch (current[0].adapterType) {
         case "ERC 721":
           return {
@@ -553,7 +555,6 @@ export default function Graph() {
   );
 
   const deployConditionTree = async () => {
-    console.log("Root", tree.length);
     if (tree) {
       const root = encodeConditions(tree);
       console.log("tree", tree, root);
@@ -565,7 +566,13 @@ export default function Graph() {
           library.getSigner()
         );
 
-        const res = await (await ActivityToken.setup(1, root)).wait();
+        const res = await (
+          await ActivityToken.setup(
+            1,
+            root,
+            "http://arweave.net/_VFXuUftzOlFPyCm-vJqspEqqY8xEe_3sw-gdgus_8o"
+          )
+        ).wait();
         console.log("ress", res);
         if (res) {
           try {
@@ -573,13 +580,15 @@ export default function Graph() {
               "https://is3otkef0k.execute-api.us-east-1.amazonaws.com/Prod/graph",
               {
                 table: "rule",
-                name: "test_rule#2",
+                name: "Lens And NFTs Club",
                 bytes: root,
                 graph: "test_graph",
-                metadata_uri: "hm7DsIqUIReq3OVZAsBfbD4Qr_dP3Eu1TgBVzP6Cuyw",
+                metadata_uri:
+                  "http://arweave.net/_VFXuUftzOlFPyCm-vJqspEqqY8xEe_3sw-gdgus_8o",
                 token_id: 1,
-                creator: "0x565CBd65Cb3e65445AfD14169003A528C985e9C7",
-                description: "Shaurya ki wedding card ERC1155 mein",
+                creator: account,
+                description:
+                  "Those who all have a lens profile and NFTs on Rainbow, join us 🍁",
               },
               {
                 headers: {
