@@ -69,6 +69,7 @@ export default function Graph() {
 
   const [open, setOpen] = React.useState(false);
   const setup = useSelector((x) => x.auth.setupInfo);
+  const address = useSelector((x) => x.auth.accountAddress);
   console.log(setup, setup === {});
   const navigate = useNavigate();
 
@@ -544,10 +545,7 @@ export default function Graph() {
           color: "#734BFF",
         }}
       >
-        {`${"0x565CBd65Cb3e65445AfD14169003A528C985e9C7"?.slice(
-          0,
-          4
-        )}...${"0x565CBd65Cb3e65445AfD14169003A528C985e9C7"?.slice(-4)}`}
+        {`${address?.slice(0, 4)}...${address?.slice(-4)}`}
       </div>
     </div>
   );

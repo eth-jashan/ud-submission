@@ -23,7 +23,7 @@ const ProfileScreen = () => {
     },
   ];
 
-  const accountAddress = useSelector((x) => x.auth.accountAddress);
+  const address = useSelector((x) => x.auth.accountAddress);
 
   const [tokens, setTokens] = useState([]);
   const [allNfts, setAllNfts] = useState([]);
@@ -72,33 +72,33 @@ const ProfileScreen = () => {
     }
   };
 
-  const fetchAllTokens = async (address) => {
-    try {
-      const tokenApis = chains.map((chain) =>
-        axios.get(
-          `https://api.covalenthq.com/v1/${chain.chainId}/address/${address}/balances_v2/?quote-currency=USD&format=JSON&nft=true&no-nft-fetch=false&key=${COVALENT_KEY}`
-        )
-      );
-      const res = await Promise.all(tokenApis);
+  // const fetchAllTokens = async (address) => {
+  //   try {
+  //     const tokenApis = chains.map((chain) =>
+  //       axios.get(
+  //         `https://api.covalenthq.com/v1/${chain.chainId}/address/${address}/balances_v2/?quote-currency=USD&format=JSON&nft=true&no-nft-fetch=false&key=${COVALENT_KEY}`
+  //       )
+  //     );
+  //     const res = await Promise.all(tokenApis);
 
-      const tokensMapped = res.map((chainInfo) => {
-        const data = chainInfo?.data?.data;
-        const tokens = data?.items.filter((x) => x.native_token === true);
-        return {
-          items: tokens,
-          chainId: data?.chain_id,
-        };
-      });
-      setTokens(tokensMapped);
-      console.log("nft", tokensMapped);
-    } catch (err) {
-      console.error("err", err);
-      return {
-        success: false,
-        tokens: null,
-      };
-    }
-  };
+  //     const tokensMapped = res.map((chainInfo) => {
+  //       const data = chainInfo?.data?.data;
+  //       const tokens = data?.items.filter((x) => x.native_token === true);
+  //       return {
+  //         items: tokens,
+  //         chainId: data?.chain_id,
+  //       };
+  //     });
+  //     setTokens(tokensMapped);
+  //     console.log("nft", tokensMapped);
+  //   } catch (err) {
+  //     console.error("err", err);
+  //     return {
+  //       success: false,
+  //       tokens: null,
+  //     };
+  //   }
+  // };
 
   //   const mintMembershipBadge = () => (
   //     <div
@@ -200,12 +200,12 @@ const ProfileScreen = () => {
   //   );
   useEffect(async () => {
     setIsLoading(true);
-    await fetchAllNft("0x469eA996dd8d4c779B4D7DB884B7841EcAaE5922");
-    await fetchMembershipNFTMetadata(
-      `0x78cc9e95447eabd06786abfa48ff36b77149e7e5`,
-      3,
-      80001
-    );
+    await fetchAllNft(address);
+    // await fetchMembershipNFTMetadata(
+    //   `0x78cc9e95447eabd06786abfa48ff36b77149e7e5`,
+    //   3,
+    //   80001
+    // );
     setIsLoading(false);
   }, []);
 
@@ -214,33 +214,33 @@ const ProfileScreen = () => {
   const [meta, setMeta] = useState(false);
   //   const claimed = useSelector((x) => x.auth.claimed);
 
-  const fetchMembershipNFTMetadata = async (
-    contractAddress,
-    tokenId,
-    chainId
-  ) => {
-    try {
-      const res = await axios.get(
-        `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${tokenId}/?quote-currency=USD&format=JSON&key=${COVALENT_KEY}`
-      );
-      const nftData = res?.data?.data?.items[0]?.nft_data;
-      console.log("res..", nftData[0].external_data);
-      if (nftData) {
-        setMeta(nftData[0].external_data.image);
-        //   return {
-        //     success: true,
-        //     metadata: nftData,
-        //   };
-        // } else {
-        //   return {
-        //     success: false,
-        //     metadata: null,
-        //   };
-      }
-    } catch (err) {
-      console.error("err", err);
-    }
-  };
+  // const fetchMembershipNFTMetadata = async (
+  //   contractAddress,
+  //   tokenId,
+  //   chainId
+  // ) => {
+  //   try {
+  //     const res = await axios.get(
+  //       `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${tokenId}/?quote-currency=USD&format=JSON&key=${COVALENT_KEY}`
+  //     );
+  //     const nftData = res?.data?.data?.items[0]?.nft_data;
+  //     console.log("res..", nftData[0].external_data);
+  //     if (nftData) {
+  //       setMeta(nftData[0].external_data.image);
+  //       //   return {
+  //       //     success: true,
+  //       //     metadata: nftData,
+  //       //   };
+  //       // } else {
+  //       //   return {
+  //       //     success: false,
+  //       //     metadata: null,
+  //       //   };
+  //     }
+  //   } catch (err) {
+  //     console.error("err", err);
+  //   }
+  // };
 
   //   const renderSnackBar = () => (
   //     <div
