@@ -27,6 +27,7 @@ import axios from "axios";
 import { useWeb3React } from "@web3-react/core";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
+import { message } from "antd";
 const sample = {
   edges: [],
   nodes: [],
@@ -606,6 +607,8 @@ export default function Graph() {
               }
             );
             console.log(res.data);
+            message.success("New Graph Deployed!");
+            navigate("/dashboard");
           } catch (error) {
             console.log(error.toString());
           }

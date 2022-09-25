@@ -23,7 +23,7 @@ export default function HomeScreen({ client }) {
   const [claimableCommunityLists, setClaimableCommunityLists] = useState([]);
   const [claimLoading, setClaimLoading] = useState(false);
   const [claimLoadingUuid, setClaimLoadingUuid] = useState(-1);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(true);
   const [claimedTokens, setClaimedTokens] = useState([]);
 
   const context = useWeb3React();
@@ -123,8 +123,8 @@ export default function HomeScreen({ client }) {
       setClaimLoadingUuid(uuid);
       const res = await claimNFT(token_id, bytes, library?.getSigner());
       console.log("res of claim nft", res);
-      if (res && xmtpClinet) {
-        const conversation = await xmtpClinet.conversations.newConversation(
+      if (res && client) {
+        const conversation = await client.conversations.newConversation(
           creator
         );
         await conversation.send(messageSent);
