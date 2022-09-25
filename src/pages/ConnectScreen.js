@@ -8,6 +8,11 @@ import { assets } from "../constant/assets";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { Client } from "@xmtp/xmtp-js";
+import { setUnstoppableAuth } from "../store/actions/auth-action";
+// import { supabase } from "../utils/supabase";
+// import axios from "axios";
+// import { checkValid } from "../utils/contractCall";
+// import { ethers } from "ethers";
 
 const ConnectScreen = () => {
   // const discordCode = useSelector((x) => x.auth.discordCode);
@@ -16,7 +21,7 @@ const ConnectScreen = () => {
   // const authorization = useSelector((x) => x.auth.authorization);
   const navigate = useNavigate();
 
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   // const onDiscordAuth = () => {
   //   if (!discordCode) {
   //     window.location.replace(
@@ -53,14 +58,6 @@ const ConnectScreen = () => {
             connector.walletConnectProvider = undefined;
           }
           await activate(connector);
-
-          // // provider = new ethers.providers.Web3Provider(provider);
-          // const signer = provider.getSigner();
-          // await checkValid(
-          //   0,
-          //   "0x211efb2e4CC04A01D82135F16D8c35FE5e93c7f54679ABA0B20F972552633A1E8e9562Ce5Ad5Ec415D47909dfbdf50ae00000000000000000000000000000000000000000000000000000000000000004CC04A01D82135F16D8c35FE5e93c7f54679ABA0B20F972552633A1E8e9562Ce5Ad5Ec415D47909de22ffa0d000000000000000000000000000000000000000000000000000000000000000d",
-          //   signer
-          // );
         } catch (error) {
           console.error(error);
         }
@@ -71,8 +68,8 @@ const ConnectScreen = () => {
   useEffect(async () => {
     if (active) {
       console.log("account address", account, chainId, library.getSigner());
-      const xmtp = await Client.create(library.getSigner());
-      setXtmpClient(xmtp);
+      dispatch(setUnstoppableAuth(account, chainId));
+      // setXtmpClient(xmtp);
     }
   }),
     [active];

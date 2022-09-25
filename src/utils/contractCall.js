@@ -1,12 +1,16 @@
 import { ethers } from "ethers";
 import activityTokenAbi from "../abi/damboTokens.json";
 
+export const contractAddress = "0x3683ee78a8B718665Bb730e21954D31DAe90E901";
+export const chainId = 80001;
+export const startingBlock = 28274828;
+
 export const createGraph = async (metaHash, root, tokenId) => {
   const provider = new ethers.providers.Web3Provider(ethereum);
   const walletAddress = accounts[0]; // first account in MetaMask
   const signer = provider.getSigner(walletAddress);
   const ActivityContract = new ethers.Contract(
-    "0x57716a1A50473b7391e9CbadcACefB848b54b145",
+    contractAddress,
     activityTokenAbi.abi,
     signer
   );
@@ -17,27 +21,41 @@ export const createGraph = async (metaHash, root, tokenId) => {
 };
 
 export const checkValid = async (tokenId, bytes, signer) => {
-  console.log("asdads", tokenId, bytes, signer);
+  console.log(
+    "check valid",
+    tokenId,
+    bytes,
+    signer,
+    typeof tokenId,
+    typeof bytes,
+    typeof signer
+  );
   const ActivityContract = new ethers.Contract(
-    "0x57716a1A50473b7391e9CbadcACefB848b54b145",
+    contractAddress,
     activityTokenAbi.abi,
     signer
   );
   const res = await ActivityContract.checkValidity(tokenId, bytes);
+  console.log("res of check valid", res);
 
   return res;
 };
 
-export const claimNFT = async (tokenId, bytes) => {
-  const provider = new ethers.providers.Web3Provider(ethereum);
-  const walletAddress = accounts[0]; // first account in MetaMask
-  const signer = provider.getSigner(walletAddress);
+export const claimNFT = async (tokenId, bytes, signer) => {
+  console.log(
+    "claim nft",
+    tokenId,
+    bytes,
+    signer,
+    typeof tokenId,
+    typeof bytes
+  );
   const ActivityContract = new ethers.Contract(
-    "0x57716a1A50473b7391e9CbadcACefB848b54b145",
+    contractAddress,
     activityTokenAbi.abi,
     signer
   );
-  const res = await (await ActivityContract.claim(tokenId, bytes)).wait;
+  const res = await (await ActivityContract.claim(tokenId, bytes)).wait();
 
   return res;
 };

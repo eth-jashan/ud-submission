@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
-import { BrowserRouter } from "react-router-dom";
+import { HashRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import { Web3Provider } from "@ethersproject/providers";
 import { Web3ReactProvider } from "@web3-react/core";
@@ -23,13 +23,13 @@ function getLibrary(provider) {
 ReactDOM.render(
   <React.StrictMode>
     <Web3ReactProvider getLibrary={getLibrary}>
-      <BrowserRouter>
+      <HashRouter>
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
             <App />
           </PersistGate>
         </Provider>
-      </BrowserRouter>
+      </HashRouter>
     </Web3ReactProvider>
   </React.StrictMode>,
   document.getElementById("root")

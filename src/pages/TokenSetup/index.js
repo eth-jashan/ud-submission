@@ -5,7 +5,7 @@ import right_arrow from "../../assets/Icons/right_arrow_white.svg";
 import { message, Upload } from "antd";
 import axios from "axios";
 import { id } from "@ethersproject/hash";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { graphSetup } from "../../store/actions/auth-action";
 import { useNavigate } from "react-router";
 
@@ -16,6 +16,8 @@ const TokenSetup = () => {
   const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState(false);
   const [file, setFile] = useState(false);
+  const address = useSelector((x) => x.auth.accountAddress);
+
   const props = {
     name: "file",
     multiple: false,
@@ -65,10 +67,7 @@ const TokenSetup = () => {
           color: "#734BFF",
         }}
       >
-        {`${"0x565CBd65Cb3e65445AfD14169003A528C985e9C7"?.slice(
-          0,
-          4
-        )}...${"0x565CBd65Cb3e65445AfD14169003A528C985e9C7"?.slice(-4)}`}
+        {`${address?.slice(0, 4)}...${address?.slice(-4)}`}
       </div>
     </div>
   );
