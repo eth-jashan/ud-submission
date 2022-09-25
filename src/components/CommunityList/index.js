@@ -26,18 +26,18 @@ const CommunityList = () => {
         console.log("asdjkclnac", res.data);
       } catch (err) {
         // res = await axios.get()
-        const res = await axios.post(
-          `https://test-staging.api.drepute.xyz/dao_tool_server/eth/collectible`,
-          {
-            endpoint: graph?.metadata_uri,
-          },
-          {
-            headers: {
-              Authorization: `Bearer yJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY2NDExMzYxNCwianRpIjoiZmM5MGY0NTUtNWI3NC00NDExLTllOTYtZDhiNmNjZjZlZWRlIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6MTY4LCJuYmYiOjE2NjQxMTM2MTQsImV4cCI6MTY2NDcxODQxNH0.2fwcFRoozm2tZUdT0-OT3Nf52BNsGensS-mpo5njTuU`,
-            },
-          }
-        );
-        console.log("res in catxch", res?.data);
+        // const res = await axios.post(
+        //   `https://test-staging.api.drepute.xyz/dao_tool_server/eth/collectible`,
+        //   {
+        //     endpoint: graph?.metadata_uri,
+        //   },
+        //   {
+        //     headers: {
+        //       Authorization: `Bearer yJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY2NDExMzYxNCwianRpIjoiZmM5MGY0NTUtNWI3NC00NDExLTllOTYtZDhiNmNjZjZlZWRlIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6MTY4LCJuYmYiOjE2NjQxMTM2MTQsImV4cCI6MTY2NDcxODQxNH0.2fwcFRoozm2tZUdT0-OT3Nf52BNsGensS-mpo5njTuU`,
+        //     },
+        //   }
+        // );
+        // console.log("res in catxch", res?.data);
       }
       return {
         ...graph,
