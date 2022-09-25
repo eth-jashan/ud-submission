@@ -128,6 +128,7 @@ export default function HomeScreen({ client }) {
           creator
         );
         await conversation.send(messageSent);
+        setModalOpen(false);
       }
       setClaimLoading(false);
       setClaimLoadingUuid(-1);
@@ -156,8 +157,8 @@ export default function HomeScreen({ client }) {
 
   useEffect(() => {
     if (active) {
-      const xmtp = await Client.create(library.getSigner());
-      setXmtpClient(xmtp);
+      // const xmtp = await Client.create(library.getSigner());
+      // setXmtpClient(xmtp);
       fetchClaimable();
       fetchClaimedTokens();
     }
@@ -288,6 +289,15 @@ export default function HomeScreen({ client }) {
           />
           <div
             style={{
+              fontFamily: "light",
+              fontSize: 16,
+              margin: "0px 0px 22px 0px",
+            }}
+          >
+            Powered by <a href={"https://xmtp.org/"}>XMTP</a>
+          </div>
+          <div
+            style={{
               width: "80%",
               padding: "12px",
               background: "#734BFF",
@@ -303,19 +313,19 @@ export default function HomeScreen({ client }) {
             onClick={() => {
               // () => setModalOpen(true)
               claimGraphToken(
-                3,
+                selected?.token_id,
                 selected?.bytes,
                 selected?.uuid,
                 selected?.creator
               );
             }}
           >
-            Claim
-            {claimLoading && claimLoadingUuid === selected?.uuid ? (
+            Send message & Claim
+            {/* {claimLoading && claimLoadingUuid === selected?.uuid ? (
               <Spin indicator={antIcon} />
             ) : (
               ""
-            )}
+            )} */}
           </div>
         </div>
       )}

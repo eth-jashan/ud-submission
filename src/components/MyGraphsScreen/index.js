@@ -11,6 +11,8 @@ import {
 import { Client } from "@xmtp/xmtp-js";
 import Loader from "../Loader";
 import "./style.scss";
+import Slideshow from "../Slideshow";
+// import Slideshow from "../Slideshow";
 
 export default function MyGraphs({ client }) {
   const [communityGraphs, setCommunityGraphs] = useState([]);
@@ -30,6 +32,7 @@ export default function MyGraphs({ client }) {
     error,
   } = context;
 
+  const [recievedMessage, setRecievedMessage] = useState([]);
   useEffect(async () => {
     // console.log("here", client);
     // const allConversations = await client.conversations.stream();
@@ -45,7 +48,14 @@ export default function MyGraphs({ client }) {
       const messagesInConversation = await conversation.messages(opts);
       messages.push(messagesInConversation);
     }
-    console.log("meesagesss", messages);
+    let allMessages = [];
+    messages.forEach((x) => {
+      x.forEach((y) => {
+        allMessages.push(y);
+      });
+    });
+    setRecievedMessage(allMessages);
+    // console.log("all messages", allMessages[0].senderAddress);
   }, []);
 
   const fetchCommunityGraphs = async () => {
@@ -105,6 +115,25 @@ export default function MyGraphs({ client }) {
 
   return (
     <div className="my-graphs-screen-container">
+      <div
+        style={{
+          fontFamily: "books",
+          fontSize: 18,
+          margin: "22px 0px 0px 0px",
+        }}
+      >
+        Messages from all claimed address
+      </div>
+      <div
+        style={{
+          fontFamily: "light",
+          fontSize: 16,
+          margin: "0px 0px 22px 0px",
+        }}
+      >
+        Powered by <a href={"https://xmtp.org/"}>XMTP</a>
+      </div>
+      <Slideshow array={recievedMessage} />
       {isLoading ? (
         <div className="my-graph-screen-lottie-wrapper">
           <Loader />

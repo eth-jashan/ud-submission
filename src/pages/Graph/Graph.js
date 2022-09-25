@@ -73,12 +73,12 @@ export default function Graph() {
   console.log(setup, setup === {});
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   if (!setup?.name) {
-  //     console.log("navigate");
-  //     // navigate("/setup");
-  //   }
-  // }, [setup]);
+  useEffect(() => {
+    if (!setup?.name) {
+      console.log("navigate");
+      navigate("/setup");
+    }
+  }, [setup]);
   const myRef = useRef("someval?");
 
   const [selected, setSelected] = useState(null);
@@ -151,7 +151,7 @@ export default function Graph() {
     return searchArray[0];
   };
 
-  const [treeCreated, setTreeCreated] = useState(true);
+  const [treeCreated, setTreeCreated] = useState(false);
 
   const getHashedValue = (id, type) => {
     const current = info.filter((x) => x.id === id);
@@ -553,6 +553,12 @@ export default function Graph() {
   );
 
   const deployConditionTree = async () => {
+    const data = await axios.get(
+      `https://is3otkef0k.execute-api.us-east-1.amazonaws.com/Prod/graph?table=rule`
+    );
+
+    console.log(data.data.length);
+
     if (tree) {
       const root = encodeConditions(tree);
       console.log("tree", tree, root);
@@ -572,11 +578,7 @@ export default function Graph() {
         );
 
         const res = await (
-          await ActivityToken.setup(
-            3,
-            root,
-            "http://arweave.net/_VFXuUftzOlFPyCm-vJqspEqqY8xEe_3sw-gdgus_8o"
-          )
+          await ActivityToken.setup(4, root, "fk;hhfkdhdkfdfknhdfknkhdhkf")
         ).wait();
         // const res = await ActivityToken.checkValidity(
         //   3,
@@ -593,7 +595,7 @@ export default function Graph() {
                 bytes: root,
                 graph: "test_graph",
                 metadata_uri: setup?.metadata_hash,
-                token_id: 2,
+                token_id: 4,
                 creator: account,
                 description: setup?.description,
               },
