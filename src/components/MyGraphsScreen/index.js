@@ -1,3 +1,4 @@
+import { useWeb3React } from "@web3-react/core";
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
@@ -7,15 +8,45 @@ import {
   contractAddress,
   startingBlock,
 } from "../../utils/contractCall";
+import { Client } from "@xmtp/xmtp-js";
 import Loader from "../Loader";
 import "./style.scss";
 
-export default function MyGraphs() {
+export default function MyGraphs({ client }) {
   const [communityGraphs, setCommunityGraphs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const address = useSelector((x) => x.auth.accountAddress);
   const navigate = useNavigate();
+  const context = useWeb3React();
+  const {
+    // connector,
+    library,
+    chainId,
+    account,
+    activate,
+    deactivate,
+    active,
+    error,
+  } = context;
+
+  useEffect(async () => {
+    // console.log("here", client);
+    // const allConversations = await client.conversations.stream();
+    // console.log("messages", allConversations);
+    let messages = [];
+    for (const conversation of await client.conversations.list()) {
+      // All parameters are optional and can be omitted
+      const opts = {
+        // Only show messages from last 24 hours
+        startTime: new Date(new Date().setDate(new Date().getDate() - 1)),
+        endTime: new Date(),
+      };
+      const messagesInConversation = await conversation.messages(opts);
+      messages.push(messagesInConversation);
+    }
+    console.log("meesagesss", messages);
+  }, []);
 
   const fetchCommunityGraphs = async () => {
     setIsLoading(true);
@@ -70,7 +101,7 @@ export default function MyGraphs() {
     setIsLoading(false);
   };
   useEffect(() => {
-    fetchCommunityGraphs();
+    // fetchCommunityGraphs();
   }, []);
 
   return (

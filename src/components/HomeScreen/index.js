@@ -8,18 +8,22 @@ import {
   chainId,
 } from "../../utils/contractCall";
 import axios from "axios";
+import { Client } from "@xmtp/xmtp-js";
 import { useWeb3React } from "@web3-react/core";
 import { LoadingOutlined } from "@ant-design/icons";
-import { Spin, message } from "antd";
+import { Spin, message, Input, Modal } from "antd";
 import { useSelector } from "react-redux";
+
+import crossBlack from "../../assets/Icons/cross.svg";
 
 const antIcon = <LoadingOutlined style={{ fontSize: 14 }} spin />;
 
-export default function HomeScreen() {
+export default function HomeScreen({ client }) {
   const [isLoading, setIsLoading] = useState(false);
   const [claimableCommunityLists, setClaimableCommunityLists] = useState([]);
   const [claimLoading, setClaimLoading] = useState(false);
   const [claimLoadingUuid, setClaimLoadingUuid] = useState(-1);
+  const [modalOpen, setModalOpen] = useState(false);
   const [claimedTokens, setClaimedTokens] = useState([]);
 
   const context = useWeb3React();
@@ -36,17 +40,20 @@ export default function HomeScreen() {
 
   const address = useSelector((x) => x.auth.accountAddress);
   const COVALENT_KEY = "ckey_5517541ba1564651939c1cf161d";
+  const [xmtpClinet, setXmtpClient] = useState(client);
+  const [messageSent, setMessage] = useState("");
 
   const fetchClaimable = async () => {
     setIsLoading(true);
     const res = await axios.get(
       `https://is3otkef0k.execute-api.us-east-1.amazonaws.com/Prod/graph?table=rule`
     );
-    const graphsMapped = res.data?.map(async (graph) => {
+    const graphsMapped = res.data?.map(async (graph, i) => {
       const isClaimable = await checkValid(
         graph?.token_id,
         graph?.bytes,
-        library?.getSigner()
+        library?.getSigner(),
+        i
       );
       return { ...graph, isClaimable };
     });
@@ -110,12 +117,18 @@ export default function HomeScreen() {
     setIsLoading(false);
   };
 
-  const claimGraphToken = async (token_id, bytes, uuid) => {
+  const claimGraphToken = async (token_id, bytes, uuid, creator) => {
     try {
       setClaimLoading(true);
       setClaimLoadingUuid(uuid);
       const res = await claimNFT(token_id, bytes, library?.getSigner());
       console.log("res of claim nft", res);
+      if (res && xmtpClinet) {
+        const conversation = await xmtpClinet.conversations.newConversation(
+          creator
+        );
+        await conversation.send(messageSent);
+      }
       setClaimLoading(false);
       setClaimLoadingUuid(-1);
       message.success("claimed successfully");
@@ -143,10 +156,25 @@ export default function HomeScreen() {
 
   useEffect(() => {
     if (active) {
+      const xmtp = await Client.create(library.getSigner());
+      setXmtpClient(xmtp);
       fetchClaimable();
       fetchClaimedTokens();
     }
   }, []);
+
+  const renderheader = () => (
+    <div>
+      <img
+        src={crossBlack}
+        onClick={() => setModalOpen(false)}
+        style={{ height: "24px", width: "24px", marginBottom: "12px" }}
+      />
+      <div style={{ fontFamily: "bold", fontSize: "36px" }}>Message Box</div>
+    </div>
+  );
+
+  const [selected, setSelected] = useState(false);
 
   return (
     <div className="home-screen-container">
@@ -170,8 +198,13 @@ export default function HomeScreen() {
                     </div>
                     <div
                       className="community-list-card-button"
-                      onClick={() =>
-                        claimGraphToken(ele?.token_id, ele?.bytes, ele?.uuid)
+                      onClick={
+                        () => {
+                          setSelected(ele);
+                          setModalOpen(true);
+                        }
+
+                        // claimGraphToken(ele?.token_id, ele?.bytes, ele?.uuid)
                       }
                     >
                       {/* <img src={addWhite} alt="" /> */}
@@ -204,6 +237,84 @@ export default function HomeScreen() {
               </>
             ) : (
               <></>
+            )}
+          </div>
+        </div>
+      )}
+      {modalOpen && (
+        <div
+          style={{
+            height: "400px",
+            width: "60%",
+            padding: "24px",
+            background: "white",
+            alignSelf: "center",
+            display: "flex",
+            flexDirection: "column",
+            position: "absolute",
+            top: "20%",
+            border: "1px solid #E1E1E0",
+            borderRadius: "24px",
+          }}
+        >
+          {renderheader()}
+          <div
+            style={{
+              fontFamily: "books",
+              color: "gray",
+              fontSize: "1rem",
+              display: "flex",
+              flexDirection: "row",
+              marginTop: "4px",
+              textAlign: "start",
+            }}
+          >
+            Send a notification message to know the community that you joined
+            the tribe !
+          </div>
+          <Input.TextArea
+            value={messageSent}
+            rows={4}
+            style={{
+              fontSize: "1rem",
+              padding: "12px 12px",
+              borderRadius: "4px",
+              border: "solid 1px #CCCCCC",
+              width: "100%",
+              marginTop: "12px",
+            }}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Message to be sent"
+          />
+          <div
+            style={{
+              width: "80%",
+              padding: "12px",
+              background: "#734BFF",
+              borderRadius: "24px",
+              fontFamily: "bold",
+              color: "white",
+              fontSize: "22px",
+              marginTop: "20px",
+              display: "flex",
+              alignItems: "center",
+              alignSelf: "center",
+            }}
+            onClick={() => {
+              // () => setModalOpen(true)
+              claimGraphToken(
+                3,
+                selected?.bytes,
+                selected?.uuid,
+                selected?.creator
+              );
+            }}
+          >
+            Claim
+            {claimLoading && claimLoadingUuid === selected?.uuid ? (
+              <Spin indicator={antIcon} />
+            ) : (
+              ""
             )}
           </div>
         </div>

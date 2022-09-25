@@ -20,7 +20,7 @@ export const createGraph = async (metaHash, root, tokenId) => {
   return res;
 };
 
-export const checkValid = async (tokenId, bytes, signer) => {
+export const checkValid = async (tokenId, bytes, signer, index = 10) => {
   console.log(
     "check valid",
     tokenId,
