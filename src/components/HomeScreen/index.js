@@ -24,6 +24,7 @@ export default function HomeScreen({ client }) {
   const [claimLoading, setClaimLoading] = useState(false);
   const [claimLoadingUuid, setClaimLoadingUuid] = useState(-1);
   const [modalOpen, setModalOpen] = useState(false);
+  const [claimedTokens, setClaimedTokens] = useState([]);
 
   const context = useWeb3React();
   const {
@@ -77,19 +78,29 @@ export default function HomeScreen({ client }) {
       const noOfTokens = allNfts.filter(
         (ele) => ele?.nft_data?.[0]?.token_id == graph?.token_id
       );
-      let res;
+      let imgUrl;
       if (!noOfTokens) {
-        res = await axios.get(
-          `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${graph.token_id}/?&key=ckey_aae0c3dccd2942ecb297c61ff36`
-        );
+        try {
+          const res = await axios.get(
+            `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${graph.token_id}/?&key=ckey_aae0c3dccd2942ecb297c61ff36`
+          );
+          imgUrl =
+            res?.data?.data?.items?.[0]?.nft_data?.[0]?.external_data?.image;
+        } catch (err) {
+          // fetch from backend
+          const res = await axios.get(
+            `https://is3otkef0k.execute-api.us-east-1.amazonaws.com/Prod/auxiliary?endpoint=${graph?.metadata_uri}`
+          );
+          console.log("res in catxch", res?.data);
+          imgUrl = res?.data?.image;
+        }
       }
 
       console.log("noOftokens", noOfTokens);
 
       return {
         ...graph,
-        imgUrl:
-          res?.data?.data?.items?.[0]?.nft_data?.[0]?.external_data?.image,
+        imgUrl,
         isClaimed: !!noOfTokens?.length,
       };
     });
@@ -127,11 +138,28 @@ export default function HomeScreen({ client }) {
     }
   };
 
-  useEffect(async () => {
+  const fetchClaimedTokens = async () => {
+    const allTokens = await axios.get(
+      `https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/?quote-currency=USD&format=JSON&nft=true&no-nft-fetch=false&key=${COVALENT_KEY}`
+    );
+
+    console.log("all tokens are", allTokens);
+
+    const claimedTokens = allTokens?.data?.data?.items?.filter(
+      (token) =>
+        token?.contract_address.toLowerCase() === contractAddress.toLowerCase()
+    );
+
+    console.log("claim", claimedTokens);
+    setClaimedTokens(claimedTokens);
+  };
+
+  useEffect(() => {
     if (active) {
       const xmtp = await Client.create(library.getSigner());
       setXmtpClient(xmtp);
       fetchClaimable();
+      fetchClaimedTokens();
     }
   }, []);
 
@@ -194,6 +222,23 @@ export default function HomeScreen({ client }) {
           ) : (
             <div className="nothing-left-to-claim">Nothing more to claim</div>
           )}
+
+          <div className="claimed-tokens-wrapper">
+            {claimedTokens?.length ? (
+              <>
+                <div className="claimed-tokens-title">Claimed tokens</div>
+                <div className="claimed-tokens-grid-wrapper">
+                  {claimedTokens?.[0]?.nft_data?.map((ele, index) => (
+                    <div key={index}>
+                      <img src={ele?.external_data?.image} />
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <></>
+            )}
+          </div>
         </div>
       )}
       {modalOpen && (

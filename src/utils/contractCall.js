@@ -35,8 +35,13 @@ export const checkValid = async (tokenId, bytes, signer, index = 10) => {
     activityTokenAbi.abi,
     signer
   );
-  const res = await ActivityContract.checkValidity(index, bytes);
-  console.log("res of check valid", res, index);
+  let res;
+  try {
+    res = await ActivityContract.checkValidity(tokenId, bytes);
+  } catch (err) {
+    console.log("erre is", err, bytes);
+  }
+  console.log("res of check valid", res);
 
   return res;
 };
