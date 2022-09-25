@@ -101,7 +101,7 @@ export default function MyGraphs({ client }) {
     setIsLoading(false);
   };
   useEffect(() => {
-    // fetchCommunityGraphs();
+    fetchCommunityGraphs();
   }, []);
 
   return (
