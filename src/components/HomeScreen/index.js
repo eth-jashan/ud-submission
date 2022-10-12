@@ -23,7 +23,7 @@ export default function HomeScreen({ client }) {
   const [claimableCommunityLists, setClaimableCommunityLists] = useState([]);
   const [claimLoading, setClaimLoading] = useState(false);
   const [claimLoadingUuid, setClaimLoadingUuid] = useState(-1);
-  const [modalOpen, setModalOpen] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
   const [claimedTokens, setClaimedTokens] = useState([]);
 
   const context = useWeb3React();

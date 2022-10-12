@@ -573,13 +573,13 @@ export default function Graph() {
       const signer = provider.getSigner(walletAddress);
       if (root) {
         const ActivityToken = new ethers.Contract(
-          "0x3683ee78a8B718665Bb730e21954D31DAe90E901",
+          "0xD320DC06406Ffc693d96e0B2E5261314dff3054a",
           activityTokenAbi.abi,
           signer
         );
 
         const res = await (
-          await ActivityToken.setup(4, root, "fk;hhfkdhdkfdfknhdfknkhdhkf")
+          await ActivityToken.setup(0, root, "fk;hhfkdhdkfdfknhdfknkhdhkf")
         ).wait();
         // const res = await ActivityToken.checkValidity(
         //   3,
